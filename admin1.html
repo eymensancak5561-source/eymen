@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistem Yönetim Paneli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;900&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0d0d0f; color: white; font-family: 'Outfit', sans-serif; padding: 20px; }
+        .admin-container { max-width: 800px; margin: auto; background: #1c1c21; padding: 30px; border-radius: 20px; border: 1px solid #2d2d35; }
+        h2 { color: #00f3ff; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .form-group { background: #151518; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        input, select, button { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #2d2d35; background: #000; color: white; }
+        .btn-add { background: #00f3ff; color: black; font-weight: bold; cursor: pointer; border: none; }
+        .btn-reset { background: #ff9f43; color: black; font-weight: bold; cursor: pointer; border: none; font-size: 12px; width: auto; padding: 10px 20px; }
+        .product-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); margin-bottom: 5px; border-radius: 5px; border-left: 3px solid #00f3ff; }
+        .del-btn { background: #ff4757; width: auto; margin-bottom: 0; padding: 5px 15px; border: none; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <h2>
+        Ürün Yönetimi 
+        <button class="btn-reset" onclick="resetToDefaults()">FABRİKA AYARLARINA DÖN</button>
+    </h2>
+    
+    <div class="form-group">
+        <label>Kategori:</label>
+        <select id="cat">
+            <option value="cpu">İşlemci</option>
+            <option value="motherboard">Anakart</option>
+            <option value="gpu">Ekran Kartı</option>
+            <option value="ram">Bellek</option>
+            <option value="ssd">SSD</option>
+            <option value="case">Kasa</option>
+            <option value="cooler">Soğutma</option>
+        </select>
+        <input type="text" id="name" placeholder="Ürün Adı">
+        <input type="number" id="price" placeholder="Fiyat (₺)">
+        <input type="text" id="img" placeholder="Resim Linki (URL)">
+        <button class="btn-add" onclick="addItem()">ÜRÜNÜ EKLE</button>
+    </div>
+
+    <div id="itemsContainer"></div>
+</div>
+
+<script>
+    // VARSAYILAN VERİLER (Siyah ekranı kurtarmak için)
+    const defaultData = {
+        cpu: { title: "İşlemci Seçin", next: "motherboard", items: [{ id: 1, name: "Intel i9-14900K", price: 24300, img: "https://www.pngmart.com/files/7/CPU-Processor-PNG-Transparent-Image.png" }] },
+        motherboard: { title: "Anakart Seçin", next: "gpu", items: [{ id: 2, name: "ASUS Prime B650M-R", price: 22000, img: "https://dlcdnwebimgs.asus.com/gain/49339463-63A5-4E7B-A3B9-8B83D4F5B0F7/with_alpha/nw/w410" }] },
+        gpu: { title: "Ekran Kartı Seçin", next: "ram", items: [{ id: 3, name: "RTX 4060 OC 8GB", price: 15000, img: "https://assets.mmsrg.com/isr/166325/ASSET_MMS_107954153/fee_786_587_png" }] },
+        ram: { title: "Bellek Seçin", next: "ssd", items: [] },
+        ssd: { title: "SSD Seçin", next: "case", items: [] },
+        case: { title: "Kasa Seçin", next: "cooler", items: [] },
+        cooler: { title: "Sıvı Soğutma Seçin", next: null, items: [] }
+    };
+
+    let database = JSON.parse(localStorage.getItem('pcBuilderDB')) || defaultData;
+
+    function addItem() {
+        const cat = document.getElementById('cat').value;
+        const name = document.getElementById('name').value;
+        const price = parseInt(document.getElementById('price').value);
+        const img = document.getElementById('img').value || "https://via.placeholder.com/150";
+
+        if(!name || !price) return alert("İsim ve fiyat girilmelidir!");
+
+        database[cat].items.push({ id: Date.now(), name, price, img });
+        save();
+        render();
+        alert("Eklendi!");
+    }
+
+    function deleteItem(cat, id) {
+        database[cat].items = database[cat].items.filter(i => i.id !== id);
+        save();
+        render();
+    }
+
+    function resetToDefaults() {
+        if(confirm("Tüm veriler silinecek ve varsayılanlar yüklenecek. Emin misin?")) {
+            database = defaultData;
+            save();
+            render();
+            alert("Sistem sıfırlandı!");
+        }
+    }
+
+    function save() { localStorage.setItem('pcBuilderDB', JSON.stringify(database)); }
+
+    function render() {
+        const container = document.getElementById('itemsContainer');
+        container.innerHTML = '<h3>Mevcut Ürünler</h3>';
+        Object.keys(database).forEach(cat => {
+            database[cat].items.forEach(item => {
+                container.innerHTML += `
+                    <div class="product-item">
+                        <span><b>${cat.toUpperCase()}</b> | ${item.name} - ${item.price}₺</span>
+                        <button class="del-btn" onclick="deleteItem('${cat}', ${item.id})">Sil</button>
+                    </div>`;
+            });
+        });
+    }
+    render();
+</script>
+</body>
+</html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celalemirpc Store | Anasayfa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #7d5fff;
+            --secondary: #3ae374;
+            --gold: #ffb142;
+            --silver: #d1d1d1;
+            --dark: #18181b;
+            --light-glass: rgba(255, 255, 255, 0.05);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text: #f4f4f5;
+            --neon: #00f3ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background: radial-gradient(circle at top right, #2d1b4e, #18181b);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- NAVIGASYON --- */
+        nav {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+            background: var(--light-glass);
+            backdrop-filter: blur(15px);
+            padding: 6px;
+            border-radius: 15px;
+            border: 1px solid var(--border-glass);
+            z-index: 1000;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            width: 95%;
+            max-width: 600px;
+            justify-content: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #a1a1aa;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.75rem;
+            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        @media (min-width: 768px) {
+            nav a { flex-direction: row; font-size: 0.9rem; }
+        }
+
+        nav a i { font-size: 1rem; }
+        nav a:hover { color: var(--text); background: var(--light-glass); }
+        nav a.active { background: var(--primary); color: white; }
+
+        /* --- ANA KONTEYNER --- */
+        .page-container {
+            margin-top: 100px;
+            padding: 0 5%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .hero-section {
+            text-align: center;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: clamp(1.8rem, 8vw, 3.8rem);
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #7d5fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            line-height: 1.1;
+        }
+
+        p.subtitle {
+            font-size: 1.1rem;
+            color: #a1a1aa;
+            margin-bottom: 30px;
+        }
+
+        /* --- FEATURE SHOWCASE --- */
+        .feature-showcase {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            background: var(--light-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 25px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        @media (min-width: 992px) {
+            .feature-showcase { flex-direction: row; text-align: left; padding: 40px; }
+        }
+
+        .feature-image { flex: 1; display: flex; justify-content: center; }
+        .feature-image img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            filter: drop-shadow(0 0 15px var(--primary));
+        }
+
+        .feature-text { flex: 1.2; }
+        .feature-text h2 { font-size: 1.8rem; margin-bottom: 15px; color: var(--text); }
+        .feature-text p { font-size: 0.95rem; color: #a1a1aa; line-height: 1.6; margin-bottom: 20px; }
+
+        .btn-detail {
+            background: var(--primary);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            transition: 0.3s;
+        }
+
+        /* --- HAZIR SİSTEMLER BÖLÜMÜ --- */
+        .systems-section {
+            width: 100%;
+            max-width: 1100px;
+            margin: 60px 0;
+            text-align: center;
+        }
+        .systems-section h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            background: linear-gradient(to right, #fff, var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .ready-systems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .ready-system-card {
+            background: var(--light-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            transition: 0.4s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .ready-system-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--neon);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.15);
+        }
+
+        .ready-system-card img {
+            max-width: 100%;
+            height: 150px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.2));
+        }
+
+        .ready-system-card h3 { font-size: 1.3rem; margin-bottom: 10px; color: var(--neon); }
+        .ready-system-card .specs {
+            font-size: 0.9rem;
+            color: #a1a1aa;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+        .ready-system-card .price {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--secondary);
+            margin-top: 15px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .ready-system-card .action-btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        /* --- AI CHAT ARAYÜZÜ --- */
+        .ai-toggle-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(125, 95, 255, 0.4);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .ai-chat-container {
+            position: fixed;
+            bottom: 100px;
+            right: 25px;
+            width: 340px;
+            height: 500px;
+            background: #18181b;
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            display: none;
+            flex-direction: column;
+            z-index: 2000;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(15px);
+        }
+
+        .ai-chat-header {
+            background: var(--primary);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 800;
+        }
+
+        .ai-chat-body {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            scroll-behavior: smooth;
+        }
+
+        .ai-msg {
+            background: var(--light-glass);
+            padding: 12px;
+            border-radius: 15px 15px 15px 0;
+            border: 1px solid var(--border-glass);
+            max-width: 90%;
+            line-height: 1.4;
+        }
+
+        .user-msg {
+            background: var(--primary);
+            color: white;
+            padding: 10px;
+            border-radius: 15px 15px 0 15px;
+            align-self: flex-end;
+            max-width: 85%;
+        }
+
+        .ai-chat-input {
+            display: flex;
+            padding: 15px;
+            gap: 8px;
+            border-top: 1px solid var(--border-glass);
+        }
+
+        .ai-chat-input input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-glass);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            flex-grow: 1;
+            outline: none;
+        }
+
+        .ai-chat-input button {
+            background: var(--primary);
+            border: none;
+            color: white;
+            padding: 0 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* --- FPS TABLO STİLİ --- */
+        .fps-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            font-size: 0.8rem;
+        }
+        .fps-table th, .fps-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-glass);
+        }
+        .fps-table th { background: var(--primary); color: white; }
+        .fps-low { color: var(--secondary); font-weight: bold; }
+        .fps-mid { color: var(--gold); font-weight: bold; }
+        .fps-high { color: #ff5e57; font-weight: bold; }
+
+        /* --- DİĞER STİLLER --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            margin-top: 30px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: var(--light-glass);
+            border: 1px solid var(--border-glass);
+            padding: 20px;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        footer { 
+            margin-top: 60px; 
+            padding: 40px; 
+            text-align: center; 
+            font-size: 0.85rem; 
+            color: #71717a;
+            border-top: 1px solid var(--border-glass);
+        }
+
+        .credits {
+            margin-top: 10px;
+            color: #a1a1aa;
+            font-style: italic;
+        }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .ready-systems-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="active"><i class="fa-solid fa-house"></i> Anasayfa</a>
+        <a href="hakkimizda.html"><i class="fa-solid fa-user"></i> Hakkımızda</a>
+        <a href="hizmetler.html"><i class="fa-solid fa-gear"></i> Hizmetler</a>
+        <a href="portfolyo.html"><i class="fa-solid fa-briefcase"></i> Portfolyo</a>
+        <a href="iletisim.html"><i class="fa-solid fa-envelope"></i> İletişim</a>
+    </nav>
+
+    <div class="page-container">
+        <div class="hero-section">
+            <h1>Dijital Dünyada<br>İz Bırakın</h1>
+            <p class="subtitle">Celalemirpc Store ile hayalindeki sistemi gerçeğe dönüştür.</p>
+            
+            <div class="feature-showcase">
+                <div class="feature-image">
+                    <img src="1_org-removebg-preview.png" alt="Sistem Topla">
+                </div>
+                
+                <div class="feature-text">
+                    <h2>Kendi Bilgisayarını Topla<br><span style="color: var(--secondary);">Sınırsız Performans.</span></h2>
+                    <p>En yeni nesil bileşenlerle donatılmış sistemlerimizle dijital deneyiminizi bir üst seviyeye taşıyın. Oyun ve tasarım süreçlerinizde kusursuz hızı hissedin.</p>
+                    <a href="kendintopla.html" class="btn-detail">Hemen Parçaları Seç</a>
+                </div>
+            </div>
+
+            <div class="systems-section">
+                <h2>Öne Çıkan Hazır Sistemler</h2>
+                <div class="ready-systems-grid">
+                    <div class="ready-system-card">
+                        <img src="ey.png" alt="Başlangıç Seviyesi PC">
+                        <h3>Oyuna Giriş Paketi</h3>
+                        <p class="specs">
+                            <b>İşlemci:</b> Intel Core i3-12100F<br>
+                            <b>Ekran Kartı:</b> NVIDIA GTX 1650<br>
+                            <b>Bellek:</b> 16GB DDR4 RAM<br>
+                            <b>Depolama:</b> 500GB NVMe SSD
+                        </p>
+                        <span class="price">15.999 ₺</span>
+                        <a href="#" class="action-btn">İncele</a>
+                    </div>
+
+                    <div class="ready-system-card">
+                        <img src="ey.png" alt="Orta Seviye Oyuncu PC">
+                        <h3>Rekabetçi Oyuncu</h3>
+                        <p class="specs">
+                            <b>İşlemci:</b> AMD Ryzen 5 7600<br>
+                            <b>Ekran Kartı:</b> NVIDIA RTX 4060<br>
+                            <b>Bellek:</b> 32GB DDR5 RAM<br>
+                            <b>Depolama:</b> 1TB NVMe SSD
+                        </p>
+                        <span class="price">34.999 ₺</span>
+                        <a href="#" class="action-btn">İncele</a>
+                    </div>
+
+                    <div class="ready-system-card">
+                        <img src="ey.png" alt="Üst Düzey PC">
+                        <h3>Profesyonel Güç</h3>
+                        <p class="specs">
+                            <b>İşlemci:</b> Intel Core i7-14700K<br>
+                            <b>Ekran Kartı:</b> NVIDIA RTX 4070 Ti SUPER<br>
+                            <b>Bellek:</b> 64GB DDR5 RAM<br>
+                            <b>Depolama:</b> 2TB NVMe SSD
+                        </p>
+                        <span class="price">69.999 ₺</span>
+                        <a href="#" class="action-btn">İncele</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <i class="fa-solid fa-bolt" style="color: #ff9f43; font-size: 1.5rem;"></i>
+                    <h4 style="margin: 10px 0;">Hızlı Performans</h4>
+                    <p style="font-size: 0.9rem; color: #a1a1aa;">Saniyeler içinde yüklenen, optimize edilmiş deneyimler.</p>
+                </div>
+                <div class="card">
+                    <i class="fa-solid fa-shield-halved" style="color: #3ae374; font-size: 1.5rem;"></i>
+                    <h4 style="margin: 10px 0;">Güvenli Altyapı</h4>
+                    <p style="font-size: 0.9rem; color: #a1a1aa;">En güncel güvenlik protokolleri ile verileriniz koruma altında.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ai-chat-container" id="aiChat">
+        <div class="ai-chat-header">
+            <span><i class="fa-solid fa-robot"></i> CelalEmir AI</span>
+            <button onclick="toggleChat()" style="background:none; border:none; color:white; cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+        </div>
+        <div class="ai-chat-body" id="chatBody">
+            <div class="ai-msg">Selam! Ben CelalEmir AI. Bana bir ekran kartı veya işlemci modeli sor, performansını birlikte ölçelim!</div>
+        </div>
+        <div class="ai-chat-input">
+            <input type="text" id="userInput" placeholder="Mesajınızı yazın..." onkeypress="if(event.key==='Enter') askAI()">
+            <button onclick="askAI()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <button class="ai-toggle-btn" onclick="toggleChat()">
+        <i class="fa-solid fa-robot"></i>
+    </button>
+
+    <footer>
+        <p>&copy; 2026 Celalemirpc Store. Tüm hakları saklıdır.</p>
+        <p class="credits">Yapanlar: Celal Emir Tok & Eymen Yağız Sancak</p>
+    </footer>
+
+    <script>
+        const synth = window.speechSynthesis;
+        let aiState = "idle"; 
+        let selectedModel = "";
+
+        const gamesData = {
+            "cs2": { name: "CS2", base: 300 },
+            "valorant": { name: "Valorant", base: 350 },
+            "cod": { name: "Call of Duty", base: 110 },
+            "cyberpunk": { name: "Cyberpunk 2077", base: 65 },
+            "rdr2": { name: "RDR 2", base: 75 },
+            "fc26": { name: "FC 26", base: 130 },
+            "gta5": { name: "GTA V", base: 140 }
+        };
+
+        function getGpuMultiplier(model) {
+            const m = model.toLowerCase();
+            if (m.includes("5090")) return 4.5;
+            if (m.includes("4090")) return 4.0;
+            if (m.includes("4080")) return 3.4;
+            if (m.includes("4070")) return 2.7;
+            if (m.includes("4060")) return 2.0;
+            if (m.includes("3060")) return 1.6;
+            if (m.includes("1660")) return 1.1;
+            if (m.includes("1650")) return 0.8;
+            if (m.includes("1050")) return 0.5;
+            return 1.0;
+        }
+
+        function speak(text) {
+            const cleanText = text.replace(/<\/?[^>]+(>|$)/g, "");
+            const utterThis = new SpeechSynthesisUtterance(cleanText);
+            utterThis.lang = 'tr-TR';
+            utterThis.rate = 1.1;
+            synth.cancel();
+            synth.speak(utterThis);
+        }
+
+        function toggleChat() {
+            const chat = document.getElementById('aiChat');
+            chat.style.display = (chat.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        function askAI() {
+            const input = document.getElementById('userInput');
+            const body = document.getElementById('chatBody');
+            const userText = input.value.trim();
+            if(!userText) return;
+
+            body.innerHTML += `<div class="user-msg">${userText}</div>`;
+            const promptText = userText.toLowerCase();
+            let response = "";
+
+            if (aiState === "idle") {
+                if (promptText.match(/(rtx|gtx|rx|intel|ryzen|i\d|r\d|ssd|nvme|\d{4})/)) {
+                    selectedModel = userText.toUpperCase();
+                    response = `<b>${selectedModel}</b> harika bir seçim. Peki, hangi oyunu oynayacaksın? <br><small>(CS2, Valorant, CoD, Cyberpunk, RDR2, FC26, GTA5)</small>`;
+                    aiState = "waiting_game_selection";
+                } else {
+                    response = "Selam! Bir model (Örn: RTX 4060) söylersen performans analizi yapabilirim.";
+                }
+            } 
+            else if (aiState === "waiting_game_selection") {
+                let foundGame = null;
+                for (let key in gamesData) {
+                    if (promptText.includes(key)) { foundGame = gamesData[key]; break; }
+                }
+
+                if (foundGame) {
+                    const multi = getGpuMultiplier(selectedModel);
+                    const base = foundGame.base * multi;
+                    const low = Math.round(base * 1.3);
+                    const mid = Math.round(base);
+                    const high = Math.round(base * 0.75);
+
+                    response = `İşte <b>${selectedModel}</b> ekran kartının <b>${foundGame.name}</b> performansı:
+                        <table class="fps-table">
+                            <tr><th>AYARLAR</th><th>TAHMİNİ FPS</th></tr>
+                            <tr><td>Düşük Ayarlar</td><td class="fps-low">${low} FPS</td></tr>
+                            <tr><td>Orta Ayarlar</td><td class="fps-mid">${mid} FPS</td></tr>
+                            <tr><td>Yüksek Ayarlar</td><td class="fps-high">${high} FPS</td></tr>
+                        </table>
+                        <br>Başka bir oyun veya kart bakmak ister misin?`;
+                    aiState = "idle";
+                } else {
+                    response = "Bu oyunu tanıyamadım. Lütfen listedeki oyunlardan birini seç: CS2, Valorant, Cyberpunk, RDR2...";
+                }
+            }
+
+            setTimeout(() => {
+                body.innerHTML += `<div class="ai-msg">${response}</div>`;
+                body.scrollTop = body.scrollHeight;
+                speak(response);
+            }, 600);
+            
+            input.value = "";
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const items = document.querySelectorAll('.card, .feature-showcase, .ready-system-card');
+            items.forEach(item => {
+                item.addEventListener('mouseenter', () => { 
+                    item.style.borderColor = 'var(--primary)'; 
+                });
+                item.addEventListener('mouseleave', () => { 
+                    item.style.borderColor = 'var(--border-glass)'; 
+                });
+            });
+        });
+    </script>
+</body>
+</html>

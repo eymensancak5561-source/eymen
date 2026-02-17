@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Builder | Pro PC Toplama</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --neon: #00f3ff;
+            --danger: #ff4757;
+            --bg: #0d0d0f;
+            --side: #151518;
+            --card: #1c1c21;
+            --border: #2d2d35;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background-color: var(--bg); color: #fff; min-height: 100vh; overflow-x: hidden; }
+
+        /* --- LAYOUT --- */
+        .app-wrapper { 
+            display: grid; 
+            grid-template-columns: 280px 1fr 380px; 
+            height: 100vh; 
+        }
+
+        /* --- SIDEBAR (SOL) --- */
+        .sidebar { background: var(--side); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
+        .sidebar h2 { font-size: 1.2rem; margin-bottom: 30px; color: var(--neon); text-align: center; }
+        
+        .cat-item {
+            padding: 15px; margin-bottom: 10px; border-radius: 12px;
+            cursor: pointer; display: flex; align-items: center; gap: 15px;
+            color: #888; transition: 0.3s; border: 1px solid transparent;
+        }
+        .cat-item i { width: 20px; text-align: center; }
+        .cat-item.active { background: rgba(0, 243, 255, 0.1); color: #fff; border-color: var(--neon); }
+        .cat-item.completed { color: #3ae374; }
+
+        /* --- CONTENT (ORTA) --- */
+        .content-area { padding: 40px; overflow-y: auto; background: radial-gradient(circle at center, #1a1a20, #0d0d0f); }
+        .grid-models { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        
+        .model-card {
+            background: var(--card); border: 2px solid var(--border); border-radius: 20px;
+            padding: 15px; text-align: center; cursor: pointer; transition: 0.4s;
+        }
+        .model-card:hover { transform: translateY(-5px); border-color: var(--neon); }
+        .model-card img { width: 100%; height: 100px; object-fit: contain; margin-bottom: 10px; }
+        .model-card h4 { font-size: 0.85rem; margin-bottom: 8px; height: 35px; overflow: hidden; }
+        .model-card .price { color: var(--neon); font-weight: 800; font-size: 1rem; }
+
+        /* --- PREVIEW (SAĞ) --- */
+        .preview-panel { background: var(--side); border-left: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; }
+        .preview-box { height: 180px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .preview-box img { max-height: 150px; filter: drop-shadow(0 0 15px var(--neon)); }
+
+        .cart-title { font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; color: var(--neon); }
+        .cart-list { flex-grow: 1; overflow-y: auto; }
+        
+        .cart-item-row {
+            background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px;
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+            border-left: 3px solid var(--neon);
+        }
+
+        .summary-box { border-top: 1px solid var(--border); padding-top: 15px; }
+        .total-row { display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: 900; }
+        .order-btn {
+            width: 100%; margin-top: 10px; padding: 15px; border: none; border-radius: 12px;
+            background: var(--neon); color: #000; font-weight: 800; cursor: pointer;
+        }
+
+        /* --- MOBILE NAV (NEW) --- */
+        .mobile-bottom-nav { display: none; }
+
+        /* --- RESPONSIVE (MOBILE) --- */
+        @media (max-width: 1024px) {
+            .app-wrapper { 
+                grid-template-columns: 1fr; 
+                height: auto;
+                padding-bottom: 80px; /* Navigasyon için boşluk */
+            }
+
+            .sidebar {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                display: flex;
+                overflow-x: auto;
+                padding: 10px;
+                gap: 10px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                white-space: nowrap;
+            }
+            .sidebar h2 { display: none; }
+            .cat-item { margin-bottom: 0; padding: 10px 20px; font-size: 0.8rem; }
+
+            .preview-panel {
+                position: fixed;
+                top: 0;
+                left: 100%; /* Gizle */
+                width: 100%;
+                height: 100vh;
+                z-index: 200;
+                transition: 0.3s;
+            }
+            .preview-panel.open { left: 0; }
+
+            .mobile-bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                background: var(--side);
+                border-top: 1px solid var(--border);
+                padding: 15px;
+                justify-content: space-around;
+                z-index: 300;
+            }
+            .mobile-btn {
+                background: none; border: none; color: #888; 
+                display: flex; flex-direction: column; align-items: center; gap: 5px;
+            }
+            .mobile-btn.active { color: var(--neon); }
+
+            .content-area { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+    <div class="sidebar" id="sidebar">
+        <h2>ADIM ADIM KUR</h2>
+        <div class="cat-item active" id="tab-cpu" onclick="changeCategory('cpu')"><i class="fa-solid fa-microchip"></i> İşlemci</div>
+        <div class="cat-item" id="tab-motherboard" onclick="changeCategory('motherboard')"><i class="fa-solid fa-circuit-board"></i> Anakart</div>
+        <div class="cat-item" id="tab-gpu" onclick="changeCategory('gpu')"><i class="fa-solid fa-vr-cardboard"></i> Ekran Kartı</div>
+        <div class="cat-item" id="tab-ram" onclick="changeCategory('ram')"><i class="fa-solid fa-memory"></i> Bellek</div>
+        <div class="cat-item" id="tab-ssd" onclick="changeCategory('ssd')"><i class="fa-solid fa-hard-drive"></i> SSD</div>
+        <div class="cat-item" id="tab-case" onclick="changeCategory('case')"><i class="fa-solid fa-box"></i> Kasa</div>
+        <div class="cat-item" id="tab-cooler" onclick="changeCategory('cooler')"><i class="fa-solid fa-faucet-drip"></i> Soğutma</div>
+    </div>
+
+    <div class="content-area">
+        <h1 id="cat-title" style="margin-bottom: 20px; font-size: 1.5rem;">İşlemci Seçin</h1>
+        <div id="models-container" class="grid-models"></div>
+    </div>
+
+    <div class="preview-panel" id="preview-panel">
+        <button class="remove-btn" style="align-self: flex-end; margin-bottom: 10px; display: none;" id="close-preview" onclick="toggleCart()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        
+        <div class="preview-box">
+            <img id="main-preview" src="https://www.pngmart.com/files/7/CPU-Processor-PNG-Transparent-Image.png">
+        </div>
+        
+        <div class="cart-title"><i class="fa-solid fa-cart-shopping"></i> Sistemin</div>
+        <div class="cart-list" id="cart-items"></div>
+        
+        <div class="summary-box">
+            <div class="total-row">
+                <span>Toplam:</span>
+                <span id="total-price">0 ₺</span>
+            </div>
+            <button class="order-btn" onclick="finishBuild()">SİPARİŞİ TAMAMLA</button>
+        </div>
+    </div>
+</div>
+
+<div class="mobile-bottom-nav">
+    <button class="mobile-btn active" id="btn-build" onclick="toggleView('build')">
+        <i class="fa-solid fa-tools"></i>
+        <span>Parçalar</span>
+    </button>
+    <button class="mobile-btn" id="btn-cart" onclick="toggleView('cart')">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span>Sistemim (<span id="cart-count">0</span>)</span>
+    </button>
+</div>
+
+<script>
+    // Veritabanın ve seçimlerin aynı kalıyor
+    const database = {
+        cpu: { title: "İşlemci Seçin", next: "motherboard", items: [
+            { id:1, name: "Intel i9-14900K", price: 24300, img: "i9 14900k.png" },
+            { id:2, name: "Intel i7-14700H", price: 19735, img: "17.png" }
+        ]},
+        motherboard: { title: "Anakart Seçin", next: "gpu", items: [
+            { id:301, name: "ASUS Prime B650M-R", price: 22000, img: "asus anakart.png" },
+            { id:302, name: "Gigabyte A520M K V2", price: 16500, img: "gigabyte.png" }
+        ]},
+        gpu: { title: "Ekran Kartı Seçin", next: "ram", items: [
+            { id:3, name: "RTX 4060 OC 8GB", price: 65000, img: "indir.png" },
+            { id:4, name: "RTX 5070 Ti OC 16GB", price: 32000, img: "asusrog.png" }
+        ]},
+        ram: { title: "Bellek Seçin", next: "ssd", items: [
+            { id:5, name: "Gskill 64GB DDR5 6000MHZ", price: 4800, img: "s.png" }
+        ]},
+        ssd: { title: "SSD Seçin", next: "case", items: [
+            { id:7, name: "Samsung 990 Pro 2TB", price: 5500, img: "https://www.pngmart.com/files/7/Hard-Disk-Transparent-PNG.png" }
+        ]},
+        case: { title: "Kasa Seçin", next: "cooler", items: [
+            { id:101, name: "Lian Li O11 Dynamic EVO", price: 6500, img: "https://pngimg.com/uploads/pc_case/pc_case_PNG22.png" },
+            { id:102, name: "NZXT H9 Flow White", price: 5800, img: "https://pngimg.com/uploads/pc_case/pc_case_PNG3.png" }
+        ]},
+        cooler: { title: "Sıvı Soğutma Seçin", next: null, items: [
+            { id:201, name: "Corsair iCUE H150i", price: 8200, img: "https://www.pngmart.com/files/22/Cooler-Master-Liquid-Cooler-PNG-Transparent.png" }
+        ]}
+    };
+
+    let selections = { cpu: null, motherboard: null, gpu: null, ram: null, ssd: null, case: null, cooler: null };
+
+    // MOBİL GÖRÜNÜM KONTROLÜ
+    function toggleView(view) {
+        const panel = document.getElementById('preview-panel');
+        const buildBtn = document.getElementById('btn-build');
+        const cartBtn = document.getElementById('btn-cart');
+        
+        if(view === 'cart') {
+            panel.classList.add('open');
+            cartBtn.classList.add('active');
+            buildBtn.classList.remove('active');
+            document.getElementById('close-preview').style.display = 'block';
+        } else {
+            panel.classList.remove('open');
+            cartBtn.classList.remove('active');
+            buildBtn.classList.add('active');
+        }
+    }
+
+    function renderModels(cat) {
+        const container = document.getElementById('models-container');
+        document.getElementById('cat-title').innerText = database[cat].title;
+        container.innerHTML = '';
+        database[cat].items.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'model-card';
+            card.innerHTML = `<img src="${product.img}"><h4>${product.name}</h4><div class="price">${product.price.toLocaleString()} ₺</div>`;
+            card.onclick = () => selectProduct(cat, product);
+            container.appendChild(card);
+        });
+    }
+
+    function selectProduct(cat, product) {
+        selections[cat] = product;
+        document.getElementById(`tab-${cat}`).classList.add('completed');
+        document.getElementById('main-preview').src = product.img;
+        updateUI();
+        const nextCat = database[cat].next;
+        if (nextCat) setTimeout(() => changeCategory(nextCat), 400);
+    }
+
+    function removeItem(cat) {
+        selections[cat] = null;
+        document.getElementById(`tab-${cat}`).classList.remove('completed');
+        updateUI();
+    }
+
+    function updateUI() {
+        const cartContainer = document.getElementById('cart-items');
+        cartContainer.innerHTML = '';
+        let total = 0;
+        let count = 0;
+        Object.keys(selections).forEach(cat => {
+            if(selections[cat]) {
+                count++;
+                total += selections[cat].price;
+                const row = document.createElement('div');
+                row.className = 'cart-item-row';
+                row.innerHTML = `<div class="cart-item-info"><h5>${selections[cat].name}</h5><p>${selections[cat].price.toLocaleString()} ₺</p></div><button class="remove-btn" onclick="removeItem('${cat}')"><i class="fa-solid fa-xmark"></i></button>`;
+                cartContainer.appendChild(row);
+            }
+        });
+        document.getElementById('total-price').innerText = total.toLocaleString() + ' ₺';
+        document.getElementById('cart-count').innerText = count;
+    }
+
+    function changeCategory(cat) {
+        document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
+        document.getElementById(`tab-${cat}`).classList.add('active');
+        renderModels(cat);
+        // Mobilde seçince otomatik yukarı kaydır
+        if(window.innerWidth < 1024) window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function finishBuild() {
+        alert("Sipariş Özeti Oluşturuldu! Toplam Tutar: " + document.getElementById('total-price').innerText);
+    }
+
+    renderModels('cpu');
+</script>
+
+</body>
+</html>

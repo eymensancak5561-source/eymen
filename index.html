@@ -537,14 +537,16 @@ function askAI() {
 
     const msg = message.toLowerCase();
 
-      let aiState = "idle";
+    // ================= GLOBAL ZEKA =================
+
+let aiState = "idle";
+
 let userSystem = {
     gpu: null,
     cpu: null,
     ram: 8
 };
 
-// GPU FPS katsayıları (1080p düşük ayar baz alınmıştır)
 const gpuPower = {
     "gtx 1650": 1.0,
     "rx 570": 1.1,
@@ -556,7 +558,6 @@ const gpuPower = {
     "rtx 4060": 2.6
 };
 
-// CPU güç katsayıları
 const cpuPower = {
     // AMD
     "ryzen 3 3100": 1.0,
@@ -573,7 +574,6 @@ const cpuPower = {
     "i7 12700": 2.5
 };
 
-// Oyun baz FPS (GTX1650 + Ryzen 3 3100 referans)
 const baseFPS = {
     "valorant": 200,
     "cs2": 120,
@@ -583,84 +583,11 @@ const baseFPS = {
     "warzone": 60,
     "rdr2": 50,
     "cyberpunk": 45
-};
-
-function handleMessage(message) {
-
-    message = message.toLowerCase();
-
-    if (aiState === "idle") {
-        addMessage("Ekran kartın nedir bro? 🎮", "ai");
-        aiState = "waiting_gpu";
-    }
-
-    else if (aiState === "waiting_gpu") {
-        for (let gpu in gpuPower) {
-            if (message.includes(gpu)) {
-                userSystem.gpu = gpu;
-                addMessage("İşlemcin nedir? (AMD / Intel modeli yaz) 🔥", "ai");
-                aiState = "waiting_cpu";
-                return;
-            }
-        }
-        addMessage("GPU tanınmadı, tekrar yaz bro 😅", "ai");
-    }
-
-    else if (aiState === "waiting_cpu") {
-        for (let cpu in cpuPower) {
-            if (message.includes(cpu)) {
-                userSystem.cpu = cpu;
-                addMessage("Kaç GB RAM var? (8 / 16 / 32) 💾", "ai");
-                aiState = "waiting_ram";
-                return;
-            }
-        }
-        addMessage("CPU tanınmadı, tekrar yaz bro 😅", "ai");
-    }
-
-    else if (aiState === "waiting_ram") {
-        if (message.includes("16")) userSystem.ram = 16;
-        else if (message.includes("32")) userSystem.ram = 32;
-        else userSystem.ram = 8;
-
-        addMessage("Tamamdır 😎 Hangi oyunu hesaplayalım?", "ai");
-        aiState = "waiting_game";
-    }
-
-    else if (aiState === "waiting_game") {
-
-        for (let game in baseFPS) {
-            if (message.includes(game)) {
-
-                let gpuMultiplier = gpuPower[userSystem.gpu] || 1;
-                let cpuMultiplier = cpuPower[userSystem.cpu] || 1;
-
-                let ramBonus = 1;
-                if (userSystem.ram === 16) ramBonus = 1.1;
-                if (userSystem.ram === 32) ramBonus = 1.2;
-
-                let finalFPS = Math.round(
-                    baseFPS[game] * gpuMultiplier * cpuMultiplier * ramBonus
-                );
-
-                addMessage(
-                    game.toUpperCase() + 
-                    " Tahmini FPS (1080p düşük): 🔥 " + 
-                    finalFPS + " FPS",
-                    "ai"
-                );
-
-                addMessage("Başka oyun hesaplayalım mı? 😎", "ai");
-                return;
-            }
-        }
-
-        addMessage("Oyun bulunamadı bro 😅", "ai");
-    }
-}                       
+};                             
     
     </script>
 </body>
 </html>
+
 
 

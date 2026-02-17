@@ -413,7 +413,7 @@
                 <h2>Öne Çıkan Hazır Sistemler</h2>
                 <div class="ready-systems-grid">
                     <div class="ready-system-card">
-                        <img src="img/ey.png" alt="Başlangıç Seviyesi PC">
+                        <img src="ey.png" alt="Başlangıç Seviyesi PC">
                         <h3>Oyuna Giriş Paketi</h3>
                         <p class="specs">
                             <b>İşlemci:</b> Intel Core i3-12100F<br>
@@ -490,132 +490,130 @@
         <p>&copy; 2026 Celalemirpc Store. Tüm hakları saklıdır.</p>
         <p class="credits">Yapanlar: Celal Emir Tok & Eymen Yağız Sancak</p>
     </footer>
-<script>
-        // --- SES VE ZEKA SİSTEMİ ---
-        const synth = window.speechSynthesis;
-        let aiState = "idle"; 
-        let selectedModel = "";
+     <script>
+    // --- DEĞİŞKENLER ---
+let aiState = "idle";
+let lastGame = null;
 
-        // OYUN VERİTABANI
-        const gamesData = {
-            "cs2": { name: "CS2", base: 300 },
-            "valorant": { name: "Valorant", base: 350 },
-            "cod": { name: "Call of Duty", base: 110 },
-            "cyberpunk": { name: "Cyberpunk 2077", base: 65 },
-            "rdr2": { name: "RDR 2", base: 75 },
-            "fc26": { name: "FC 26", base: 130 },
-            "gta5": { name: "GTA V", base: 140 }
+// --- SOHBET PENCERESİNİ AÇ/KAPAT (Eksikti, Eklendi) ---
+function toggleChat() {
+    const chat = document.getElementById('aiChat');
+    if (chat.style.display === "none" || chat.style.display === "") {
+        chat.style.display = "flex";
+    } else {
+        chat.style.display = "none";
+    }
+}
+
+// --- SESLİ OKUMA (Eksikti, Eklendi) ---
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        // HTML etiketlerini temizle (<b> vb. okumasın)
+        const cleanText = text.replace(/<[^>]*>?/gm, '');
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = 'tr-TR';
+        utterance.rate = 1.1;
+        // speechSynthesis.speak(utterance); // İstersen bu satırı aktif edebilirsin
+    }
+}
+
+// --- MESAJ EKLEME FONKSİYONU ---
+function addMessage(text, sender) {
+    const body = document.getElementById('chatBody');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = sender === "ai" ? "ai-msg" : "user-msg";
+    msgDiv.innerHTML = text;
+    body.appendChild(msgDiv);
+    
+    // Otomatik aşağı kaydır
+    body.scrollTo({
+        top: body.scrollHeight,
+        behavior: 'smooth'
+    });
+    
+    if (sender === "ai") {
+        speak(text); 
+    }
+}
+
+// --- ANA ZEKA FONKSİYONU ---
+function askAI() {
+    const input = document.getElementById('userInput');
+    let message = input.value.trim();
+    if (!message) return;
+
+    addMessage(message, "user");
+    input.value = ""; 
+
+    const msg = message.toLowerCase();
+
+    // 1. DURUM: BAŞLANGIÇ
+    if (aiState === "idle") {
+        if (msg.includes("fps") || msg.includes("oyun") || msg.match(/(rtx|gtx|rx|intel|ryzen|i\d|r\d|\d{4})/)) {
+            aiState = "waiting_game_selection";
+            setTimeout(() => {
+                addMessage("Hangi oyunu soruyorsun bro? 😎 <br><small>(Valorant, CS2, GTA5, RDR2 vb.)</small>", "ai");
+            }, 500);
+        } else {
+            setTimeout(() => {
+                addMessage("Selam! FPS öğrenmek için bir oyun ismi veya ekran kartı modeli yaz bro 🎮", "ai");
+            }, 500);
+        }
+    }
+
+    // 2. DURUM: OYUN SEÇİMİ
+    else if (aiState === "waiting_game_selection") {
+        const games = {
+            "valorant": { fps: "200+ FPS", name: "VALORANT" },
+            "cs2": { fps: "120+ FPS", name: "CS2" },
+            "fortnite": { fps: "120+ FPS", name: "FORTNITE" },
+            "gta5": { fps: "90+ FPS", name: "GTA V" },
+            "pubg": { fps: "80+ FPS", name: "PUBG" },
+            "warzone": { fps: "60 FPS", name: "WARZONE" },
+            "rdr2": { fps: "50 FPS", name: "RDR 2" },
+            "cyberpunk": { fps: "45 FPS", name: "CYBERPUNK 2077" }
         };
 
-        // GPU GÜÇ ANALİZİ
-        function getGpuMultiplier(model) {
-            let m = model.toLowerCase();
-            if (m.includes("5090")) return 4.5;
-            if (m.includes("4090")) return 4.0;
-            if (m.includes("4080")) return 3.4;
-            if (m.includes("4070")) return 2.7;
-            if (m.includes("4060")) return 2.0;
-            if (m.includes("3060")) return 1.6;
-            if (m.includes("1660")) return 1.1;
-            if (m.includes("1650")) return 0.8;
-            if (m.includes("1050")) return 0.5;
-            return 1.0;
-        }
-
-        function speak(text) {
-            // Tabloyu okumasın diye metni sadeleştiriyoruz
-            const summary = text.split('<table')[0].replace(/<\/?[^>]+(>|$)/g, "");
-            const utterThis = new SpeechSynthesisUtterance(summary);
-            utterThis.lang = 'tr-TR';
-            utterThis.rate = 1.1;
-            // Konuşmaya başlamadan önce varsa eskisini sustur
-            synth.cancel(); 
-            synth.speak(utterThis);
-        }
-
-        function toggleChat() {
-            const chat = document.getElementById('aiChat');
-            // Stil kontrolünü daha garanti yapıyoruz
-            if (chat.style.display === 'none' || chat.style.display === '') {
-                chat.style.display = 'flex';
-            } else {
-                chat.style.display = 'none';
-                // KAPATILDIĞI AN TÜM SESİ KES
-                synth.cancel(); 
+        let found = false;
+        for (let gameKey in games) {
+            if (msg.includes(gameKey)) {
+                lastGame = games[gameKey];
+                found = true;
+                
+                setTimeout(() => {
+                    addMessage(`<b>${lastGame.name}</b> → Düşük Ayarlarda Ortalama: <b>${lastGame.fps}</b> 🔥`, "ai");
+                    addMessage("Peki rekabet mi oynuyorsun yoksa görsellik mi önemli? 🎮", "ai");
+                    aiState = "game_followup";
+                }, 500);
+                break;
             }
         }
 
-        function askAI() {
-            const input = document.getElementById('userInput');
-            const body = document.getElementById('chatBody');
-            const userText = input.value.trim();
-            if(!userText) return;
-
-            body.innerHTML += `<div class="user-msg">${userText}</div>`;
-            const prompt = userText.toLowerCase();
-            let response = "";
-
-            if (aiState === "idle") {
-                if (prompt.match(/(rtx|gtx|rx|intel|ryzen|i\d|r\d|ssd|nvme|\d{4})/)) {
-                    selectedModel = userText.toUpperCase();
-                    response = `<b>${selectedModel}</b> harika. Peki, hangi oyunda FPS değerlerine bakalım? <br><small>(CS2, Valorant, CoD, Cyberpunk, RDR2, FC26, GTA5)</small>`;
-                    aiState = "waiting_game_selection";
-                } else {
-                    response = "Selam! Bir ekran kartı modeli (Örn: RTX 4060) yazarsan performans analizi yapabilirim.";
-                }
-            } 
-            else if (aiState === "waiting_game_selection") {
-                let foundGame = null;
-                for (let key in gamesData) {
-                    if (prompt.includes(key)) { foundGame = gamesData[key]; break; }
-                }
-
-                if (foundGame) {
-                    const multi = getGpuMultiplier(selectedModel);
-                    const base = foundGame.base * multi;
-                    const low = Math.round(base * 1.35);
-                    const mid = Math.round(base);
-                    const high = Math.round(base * 0.70);
-
-                    response = `<b>${selectedModel}</b> için <b>${foundGame.name}</b> değerleri:
-                        <table class="fps-table">
-                            <tr><th>AYAR</th><th>TAHMİNİ FPS</th></tr>
-                            <tr><td>Düşük</td><td class="fps-low">${low} FPS</td></tr>
-                            <tr><td>Orta</td><td class="fps-mid">${mid} FPS</td></tr>
-                            <tr><td>Yüksek</td><td class="fps-high">${high} FPS</td></tr>
-                        </table>
-                        <br>Başka bir oyun bakmak ister misin?`;
-                    aiState = "idle";
-                } else {
-                    response = "Bu oyunu bulamadım. CS2, Valorant veya GTA5 gibi bir oyun yazar mısın?";
-                }
-            }
-
+        if (!found) {
             setTimeout(() => {
-                body.innerHTML += `<div class="ai-msg">${response}</div>`;
-                body.scrollTop = body.scrollHeight;
-                // Sadece chat açıksa konuş
-                if(document.getElementById('aiChat').style.display === 'flex') {
-                    speak(response);
-                }
+                addMessage("O oyunu tanımadım bro 😅 Tekrar yazar mısın?", "ai");
             }, 500);
-            
-            input.value = "";
         }
+    }
 
-        // Kart efektleri için başlangıç
-        document.addEventListener('DOMContentLoaded', () => {
-            const items = document.querySelectorAll('.card, .feature-showcase, .ready-system-card');
-            items.forEach(item => {
-                item.addEventListener('mouseenter', () => { item.style.borderColor = 'var(--primary)'; });
-                item.addEventListener('mouseleave', () => { item.style.borderColor = 'var(--border-glass)'; });
-            });
-        });
-    </script>
+    // 3. DURUM: DEVAM SOHBETİ
+    else if (aiState === "game_followup") {
+        setTimeout(() => {
+            if (msg.includes("rekabet")) {
+                addMessage("O zaman tüm ayarları düşüğe çek + performans modu aç ⚡", "ai");
+                addMessage("Bu arada 16GB RAM yaparsan FPS daha stabil olur 👀", "ai");
+            } 
+            else if (msg.includes("görsel") || msg.includes("grafik") || msg.includes("kalite")) {
+                addMessage("Orta ayar + FSR/DLSS aç. Hem görüntü hem FPS dengede olur 🔥", "ai");
+            } 
+            else {
+                addMessage("Anladım bro 😎 Başka bir şey sormak istersen buradayım.", "ai");
+            }
+            aiState = "idle";
+        }, 500);
+    }
+}
     
+    </script>
 </body>
-
 </html>
-
-
-

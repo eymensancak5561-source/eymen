@@ -10,9 +10,13 @@
         h2 { color: #00f3ff; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .form-group { background: #151518; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
         input, select, button { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #2d2d35; background: #000; color: white; }
+        /* Dosya seçme butonu için özel stil */
+        input[type="file"] { background: #1c1c21; cursor: pointer; }
         .btn-add { background: #00f3ff; color: black; font-weight: bold; cursor: pointer; border: none; }
         .btn-reset { background: #ff9f43; color: black; font-weight: bold; cursor: pointer; border: none; font-size: 12px; width: auto; padding: 10px 20px; }
         .product-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); margin-bottom: 5px; border-radius: 5px; border-left: 3px solid #00f3ff; }
+        .product-info { display: flex; align-items: center; gap: 15px; }
+        .preview-img { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; background: #000; }
         .del-btn { background: #ff4757; width: auto; margin-bottom: 0; padding: 5px 15px; border: none; cursor: pointer; border-radius: 5px; }
     </style>
 </head>
@@ -37,7 +41,10 @@
         </select>
         <input type="text" id="name" placeholder="Ürün Adı">
         <input type="number" id="price" placeholder="Fiyat (₺)">
-        <input type="text" id="img" placeholder="Resim Linki (URL)">
+        
+        <label>Ürün Resmi Seç (PC'den):</label>
+        <input type="file" id="imgFile" accept="image/*">
+        
         <button class="btn-add" onclick="addItem()">ÜRÜNÜ EKLE</button>
     </div>
 
@@ -45,11 +52,10 @@
 </div>
 
 <script>
-    // VARSAYILAN VERİLER (Siyah ekranı kurtarmak için)
     const defaultData = {
-        cpu: { title: "İşlemci Seçin", next: "motherboard", items: [{ id: 1, name: "Intel i9-14900K", price: 24300, img: "https://www.pngmart.com/files/7/CPU-Processor-PNG-Transparent-Image.png" }] },
-        motherboard: { title: "Anakart Seçin", next: "gpu", items: [{ id: 2, name: "ASUS Prime B650M-R", price: 22000, img: "https://dlcdnwebimgs.asus.com/gain/49339463-63A5-4E7B-A3B9-8B83D4F5B0F7/with_alpha/nw/w410" }] },
-        gpu: { title: "Ekran Kartı Seçin", next: "ram", items: [{ id: 3, name: "RTX 4060 OC 8GB", price: 15000, img: "https://assets.mmsrg.com/isr/166325/ASSET_MMS_107954153/fee_786_587_png" }] },
+        cpu: { title: "İşlemci Seçin", next: "motherboard", items: [] },
+        motherboard: { title: "Anakart Seçin", next: "gpu", items: [] },
+        gpu: { title: "Ekran Kartı Seçin", next: "ram", items: [] },
         ram: { title: "Bellek Seçin", next: "ssd", items: [] },
         ssd: { title: "SSD Seçin", next: "case", items: [] },
         case: { title: "Kasa Seçin", next: "cooler", items: [] },
@@ -58,18 +64,45 @@
 
     let database = JSON.parse(localStorage.getItem('pcBuilderDB')) || defaultData;
 
-    function addItem() {
+    // Resmi Base64 formatına çeviren yardımcı fonksiyon
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    async function addItem() {
         const cat = document.getElementById('cat').value;
         const name = document.getElementById('name').value;
         const price = parseInt(document.getElementById('price').value);
-        const img = document.getElementById('img').value || "https://via.placeholder.com/150";
-
+        const fileInput = document.getElementById('imgFile');
+        
         if(!name || !price) return alert("İsim ve fiyat girilmelidir!");
 
-        database[cat].items.push({ id: Date.now(), name, price, img });
+        let imgData = "https://via.placeholder.com/150"; // Varsayılan resim
+
+        // Eğer bir dosya seçildiyse onu işle
+        if (fileInput.files.length > 0) {
+            try {
+                imgData = await getBase64(fileInput.files[0]);
+            } catch (err) {
+                console.error("Resim yükleme hatası:", err);
+            }
+        }
+
+        database[cat].items.push({ id: Date.now(), name, price, img: imgData });
         save();
         render();
-        alert("Eklendi!");
+        
+        // Formu temizle
+        document.getElementById('name').value = "";
+        document.getElementById('price').value = "";
+        document.getElementById('imgFile').value = "";
+        
+        alert("Ürün başarıyla eklendi!");
     }
 
     function deleteItem(cat, id) {
@@ -80,7 +113,7 @@
 
     function resetToDefaults() {
         if(confirm("Tüm veriler silinecek ve varsayılanlar yüklenecek. Emin misin?")) {
-            database = defaultData;
+            database = JSON.parse(JSON.stringify(defaultData));
             save();
             render();
             alert("Sistem sıfırlandı!");
@@ -96,7 +129,10 @@
             database[cat].items.forEach(item => {
                 container.innerHTML += `
                     <div class="product-item">
-                        <span><b>${cat.toUpperCase()}</b> | ${item.name} - ${item.price}₺</span>
+                        <div class="product-info">
+                            <img src="${item.img}" class="preview-img">
+                            <span><b>${cat.toUpperCase()}</b> | ${item.name} - ${item.price}₺</span>
+                        </div>
                         <button class="del-btn" onclick="deleteItem('${cat}', ${item.id})">Sil</button>
                     </div>`;
             });

@@ -74,60 +74,42 @@
             background: var(--neon); color: #000; font-weight: 800; cursor: pointer;
         }
 
-        /* --- MOBILE NAV (NEW) --- */
-        .mobile-bottom-nav { display: none; }
+        .remove-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.1rem; }
 
-        /* --- RESPONSIVE (MOBILE) --- */
+        /* --- ÖDEME MODAL (YENİ) --- */
+        .payment-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .payment-card {
+            background: var(--side); border: 1px solid var(--neon);
+            width: 90%; max-width: 450px; padding: 30px; border-radius: 25px;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+        }
+        .pay-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+        .method-btn {
+            background: #000; border: 1px solid var(--border); padding: 12px; border-radius: 10px;
+            color: #fff; cursor: pointer; text-align: center; font-size: 0.9rem;
+        }
+        .method-btn.active { border-color: var(--neon); background: rgba(0, 243, 255, 0.1); }
+        .card-input-group input {
+            width: 100%; background: #000; border: 1px solid var(--border); 
+            padding: 12px; border-radius: 8px; color: #fff; margin-bottom: 10px; outline: none;
+        }
+        .card-input-group input:focus { border-color: var(--neon); }
+
+        /* --- RESPONSIVE --- */
         @media (max-width: 1024px) {
-            .app-wrapper { 
-                grid-template-columns: 1fr; 
-                height: auto;
-                padding-bottom: 80px; /* Navigasyon için boşluk */
-            }
-
-            .sidebar {
-                position: sticky;
-                top: 0;
-                z-index: 100;
-                display: flex;
-                overflow-x: auto;
-                padding: 10px;
-                gap: 10px;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-                white-space: nowrap;
-            }
+            .app-wrapper { grid-template-columns: 1fr; height: auto; padding-bottom: 80px; }
+            .sidebar { position: sticky; top: 0; z-index: 100; display: flex; overflow-x: auto; padding: 10px; gap: 10px; border-right: none; border-bottom: 1px solid var(--border); white-space: nowrap; }
             .sidebar h2 { display: none; }
             .cat-item { margin-bottom: 0; padding: 10px 20px; font-size: 0.8rem; }
-
-            .preview-panel {
-                position: fixed;
-                top: 0;
-                left: 100%; /* Gizle */
-                width: 100%;
-                height: 100vh;
-                z-index: 200;
-                transition: 0.3s;
-            }
+            .preview-panel { position: fixed; top: 0; left: 100%; width: 100%; height: 100vh; z-index: 200; transition: 0.3s; }
             .preview-panel.open { left: 0; }
-
-            .mobile-bottom-nav {
-                display: flex;
-                position: fixed;
-                bottom: 0;
-                width: 100%;
-                background: var(--side);
-                border-top: 1px solid var(--border);
-                padding: 15px;
-                justify-content: space-around;
-                z-index: 300;
-            }
-            .mobile-btn {
-                background: none; border: none; color: #888; 
-                display: flex; flex-direction: column; align-items: center; gap: 5px;
-            }
+            .mobile-bottom-nav { display: flex; position: fixed; bottom: 0; width: 100%; background: var(--side); border-top: 1px solid var(--border); padding: 15px; justify-content: space-around; z-index: 300; }
+            .mobile-btn { background: none; border: none; color: #888; display: flex; flex-direction: column; align-items: center; gap: 5px; }
             .mobile-btn.active { color: var(--neon); }
-
             .content-area { padding: 20px; }
         }
     </style>
@@ -152,7 +134,7 @@
     </div>
 
     <div class="preview-panel" id="preview-panel">
-        <button class="remove-btn" style="align-self: flex-end; margin-bottom: 10px; display: none;" id="close-preview" onclick="toggleCart()">
+        <button class="remove-btn" style="align-self: flex-end; margin-bottom: 10px; display: none;" id="close-preview" onclick="toggleView('build')">
             <i class="fa-solid fa-xmark"></i>
         </button>
         
@@ -173,6 +155,30 @@
     </div>
 </div>
 
+<div class="payment-overlay" id="payment-modal">
+    <div class="payment-card">
+        <h2 style="color: var(--neon); text-align: center;">Ödeme Paneli</h2>
+        <div class="pay-methods">
+            <div class="method-btn active" id="m-card" onclick="setPayMethod('card')">Kredi Kartı</div>
+            <div class="method-btn" id="m-transfer" onclick="setPayMethod('transfer')">Havale/EFT</div>
+        </div>
+        <div id="card-inputs" class="card-input-group">
+            <input type="text" placeholder="Kart Sahibi">
+            <input type="text" placeholder="**** **** **** ****">
+            <div style="display: flex; gap: 10px;">
+                <input type="text" placeholder="AA/YY">
+                <input type="text" placeholder="CVC">
+            </div>
+        </div>
+        <div id="transfer-inputs" style="display: none; text-align: center; padding: 10px; background: #000; border-radius: 10px;">
+            <p style="color: var(--neon); margin-bottom: 5px;">IBAN: TR99 0000 1111 2222 3333 44</p>
+            <p style="font-size: 0.8rem; color: #888;">Eymen Sancak Bilişim LTD.</p>
+        </div>
+        <button class="order-btn" style="margin-top: 20px;" onclick="processOrder()">ÖDEMEYİ ONAYLA</button>
+        <p style="text-align: center; margin-top: 15px; color: #555; cursor: pointer; font-size: 0.8rem;" onclick="closePayment()">Vazgeç</p>
+    </div>
+</div>
+
 <div class="mobile-bottom-nav">
     <button class="mobile-btn active" id="btn-build" onclick="toggleView('build')">
         <i class="fa-solid fa-tools"></i>
@@ -185,48 +191,27 @@
 </div>
 
 <script>
-    // Veritabanın ve seçimlerin aynı kalıyor
-    const database = {
-        cpu: { title: "İşlemci Seçin", next: "motherboard", items: [
-            { id:1, name: "Intel i9-14900K", price: 24300, img: "i9 14900k.png" },
-            { id:2, name: "Intel i7-14700H", price: 19735, img: "17.png" }
-        ]},
-        motherboard: { title: "Anakart Seçin", next: "gpu", items: [
-            { id:301, name: "ASUS Prime B650M-R", price: 22000, img: "asus anakart.png" },
-            { id:302, name: "Gigabyte A520M K V2", price: 16500, img: "gigabyte.png" }
-        ]},
-        gpu: { title: "Ekran Kartı Seçin", next: "ram", items: [
-            { id:3, name: "RTX 4060 OC 8GB", price: 65000, img: "indir.png" },
-            { id:4, name: "RTX 5070 Ti OC 16GB", price: 32000, img: "asusrog.png" }
-        ]},
-        ram: { title: "Bellek Seçin", next: "ssd", items: [
-            { id:5, name: "Gskill 64GB DDR5 6000MHZ", price: 4800, img: "s.png" }
-        ]},
-        ssd: { title: "SSD Seçin", next: "case", items: [
-            { id:7, name: "Samsung 990 Pro 2TB", price: 5500, img: "https://www.pngmart.com/files/7/Hard-Disk-Transparent-PNG.png" }
-        ]},
-        case: { title: "Kasa Seçin", next: "cooler", items: [
-            { id:101, name: "Lian Li O11 Dynamic EVO", price: 6500, img: "https://pngimg.com/uploads/pc_case/pc_case_PNG22.png" },
-            { id:102, name: "NZXT H9 Flow White", price: 5800, img: "https://pngimg.com/uploads/pc_case/pc_case_PNG3.png" }
-        ]},
-        cooler: { title: "Sıvı Soğutma Seçin", next: null, items: [
-            { id:201, name: "Corsair iCUE H150i", price: 8200, img: "https://www.pngmart.com/files/22/Cooler-Master-Liquid-Cooler-PNG-Transparent.png" }
-        ]}
+    const defaultData = {
+        cpu: { title: "İşlemci Seçin", next: "motherboard", items: [] },
+        motherboard: { title: "Anakart Seçin", next: "gpu", items: [] },
+        gpu: { title: "Ekran Kartı Seçin", next: "ram", items: [] },
+        ram: { title: "Bellek Seçin", next: "ssd", items: [] },
+        ssd: { title: "SSD Seçin", next: "case", items: [] },
+        case: { title: "Kasa Seçin", next: "cooler", items: [] },
+        cooler: { title: "Sıvı Soğutma Seçin", next: null, items: [] }
     };
 
+    let database = JSON.parse(localStorage.getItem('pcBuilderDB')) || defaultData;
     let selections = { cpu: null, motherboard: null, gpu: null, ram: null, ssd: null, case: null, cooler: null };
 
-    // MOBİL GÖRÜNÜM KONTROLÜ
     function toggleView(view) {
         const panel = document.getElementById('preview-panel');
         const buildBtn = document.getElementById('btn-build');
         const cartBtn = document.getElementById('btn-cart');
-        
         if(view === 'cart') {
             panel.classList.add('open');
             cartBtn.classList.add('active');
             buildBtn.classList.remove('active');
-            document.getElementById('close-preview').style.display = 'block';
         } else {
             panel.classList.remove('open');
             cartBtn.classList.remove('active');
@@ -236,8 +221,12 @@
 
     function renderModels(cat) {
         const container = document.getElementById('models-container');
-        document.getElementById('cat-title').innerText = database[cat].title;
+        document.getElementById('cat-title').innerText = database[cat]?.title || "Seçim Yapın";
         container.innerHTML = '';
+        if(!database[cat] || !database[cat].items || database[cat].items.length === 0) {
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; border: 2px dashed #333; border-radius: 20px;"><p style="color: #666;">Kategori boş.</p></div>`;
+            return;
+        }
         database[cat].items.forEach(product => {
             const card = document.createElement('div');
             card.className = 'model-card';
@@ -265,8 +254,7 @@
     function updateUI() {
         const cartContainer = document.getElementById('cart-items');
         cartContainer.innerHTML = '';
-        let total = 0;
-        let count = 0;
+        let total = 0, count = 0;
         Object.keys(selections).forEach(cat => {
             if(selections[cat]) {
                 count++;
@@ -285,12 +273,29 @@
         document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
         document.getElementById(`tab-${cat}`).classList.add('active');
         renderModels(cat);
-        // Mobilde seçince otomatik yukarı kaydır
-        if(window.innerWidth < 1024) window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
+    // --- ÖDEME FONKSİYONLARI (YENİ) ---
     function finishBuild() {
-        alert("Sipariş Özeti Oluşturuldu! Toplam Tutar: " + document.getElementById('total-price').innerText);
+        if(document.getElementById('total-price').innerText === "0 ₺") {
+            alert("Lütfen önce parça seçin!");
+            return;
+        }
+        document.getElementById('payment-modal').style.display = 'flex';
+    }
+
+    function closePayment() { document.getElementById('payment-modal').style.display = 'none'; }
+
+    function setPayMethod(method) {
+        document.getElementById('m-card').classList.toggle('active', method === 'card');
+        document.getElementById('m-transfer').classList.toggle('active', method === 'transfer');
+        document.getElementById('card-inputs').style.display = method === 'card' ? 'block' : 'none';
+        document.getElementById('transfer-inputs').style.display = method === 'transfer' ? 'block' : 'none';
+    }
+
+    function processOrder() {
+        alert("Siparişiniz başarıyla alındı! Teşekkür ederiz.");
+        location.reload();
     }
 
     renderModels('cpu');

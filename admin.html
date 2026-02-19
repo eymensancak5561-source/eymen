@@ -72,6 +72,26 @@
 </div>
 
 <script>
+
+   // Render kısmındaki img etiketine küçük bir dokunuş:
+container.innerHTML += `
+    <div class="product-item">
+        <div class="product-info">
+            <div style="background: #2d2d35; padding: 5px; border-radius: 8px;">
+                <img src="${item.img}" class="preview-img" style="mix-blend-mode: lighten;">
+            </div>
+            <div>
+                <div style="font-size: 11px; color: #00f3ff; opacity: 0.7;">${cat.toUpperCase()}</div>
+                <div style="font-weight: 600;">${item.name}</div>
+                <div style="color: #3ae374;">${item.price.toLocaleString('tr-TR')} ₺</div>
+            </div>
+        </div>
+        <div class="action-btns">
+            <button class="edit-btn" onclick="editItem('${cat}', ${item.id})">⚙️</button>
+            <button class="del-btn" onclick="deleteItem('${cat}', ${item.id})">🗑️</button>
+        </div>
+    </div>`;
+    
     const defaultData = {
         cpu: { title: "İşlemci", next: "motherboard", items: [] },
         motherboard: { title: "Anakart", next: "gpu", items: [] },
@@ -239,3 +259,4 @@
 </script>
 </body>
 </html>
+

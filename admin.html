@@ -2,77 +2,225 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Sistem Yönetim Paneli | Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;900&display=swap" rel="stylesheet">
+    <title>Premium Admin Panel | PC Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
     <style>
-        body { background: #0d0d0f; color: white; font-family: 'Outfit', sans-serif; padding: 20px; }
-        .admin-container { max-width: 800px; margin: auto; background: #1c1c21; padding: 30px; border-radius: 20px; border: 1px solid #2d2d35; }
-        h2 { color: #00f3ff; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .form-group { background: #151518; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
+        :root {
+            --primary: #00f3ff;
+            --secondary: #3ae374;
+            --danger: #ff4757;
+            --warning: #ffb142;
+            --bg: #08080a;
+            --card-bg: #13131a;
+            --input-bg: #000000;
+        }
+
+        body { 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Outfit', sans-serif; 
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* --- ŞİFRELEME EKRANI --- */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: 0.5s;
+        }
+
+        .login-box {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid #2d2d35;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* --- ANA KONTEYNER --- */
+        .admin-container { 
+            width: 100%;
+            max-width: 900px; 
+            background: var(--card-bg); 
+            padding: 40px; 
+            border-radius: 30px; 
+            border: 1px solid #2d2d35;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none; /* Şifre girilene kadar gizli */
+        }
+
+        h2 { 
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: white; 
+            margin-bottom: 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        h2 span { color: var(--primary); }
+
+        .form-group { 
+            background: #1a1a23; 
+            padding: 25px; 
+            border-radius: 20px; 
+            margin-bottom: 30px; 
+            border: 1px solid #2d2d35;
+            position: sticky;
+            top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 20px; 
+            border-radius: 12px; 
+            border: 1px solid #2d2d35; 
+            background: var(--input-bg); 
+            color: white; 
+            font-size: 16px; 
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0,243,255,0.2); outline: none; }
+
+        .btn-add { background: var(--primary); color: black; font-weight: 800; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-update { background: var(--secondary); color: black; font-weight: 800; cursor: pointer; border: none; display: none; text-transform: uppercase; }
+        .btn-reset { background: rgba(255, 71, 87, 0.1); color: var(--danger); font-weight: 600; cursor: pointer; border: 1px solid var(--danger); font-size: 12px; width: auto; padding: 8px 16px; border-radius: 8px; transition: 0.3s; }
+        .btn-reset:hover { background: var(--danger); color: white; }
+
+        /* --- ÜRÜN LİSTESİ --- */
+        .product-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 16px; 
+            background: #1a1a23; 
+            margin-bottom: 12px; 
+            border-radius: 16px; 
+            border: 1px solid #2d2d35;
+            transition: 0.3s;
+        }
+
+        .product-item:hover { transform: translateY(-3px); border-color: var(--primary); background: #21212b; }
+
+        .product-info { display: flex; align-items: center; gap: 20px; }
+
+        .img-container {
+            width: 60px; height: 60px;
+            background: black;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            border: 1px solid #333;
+        }
+
+        .preview-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .item-details h4 { margin: 0; font-size: 17px; font-weight: 600; }
+        .item-details p { margin: 4px 0 0; color: var(--secondary); font-weight: 700; font-size: 15px; }
+
+        .action-btns { display: flex; gap: 10px; }
+        .edit-btn { background: #2d2d35; color: var(--warning); padding: 10px 18px; border: none; cursor: pointer; border-radius: 10px; font-weight: bold; transition: 0.2s; }
+        .edit-btn:hover { background: var(--warning); color: black; }
         
-        /* input alanlarını güncelledim */
-        input, select, button { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #2d2d35; background: #000; color: white; font-size: 16px; }
-        input:focus { border-color: #00f3ff; outline: none; }
-        
-        input[type="file"] { background: #1c1c21; cursor: pointer; }
-        
-        .btn-add { background: #00f3ff; color: black; font-weight: bold; cursor: pointer; border: none; }
-        .btn-update { background: #3ae374; color: black; font-weight: bold; cursor: pointer; border: none; display: none; }
-        .btn-reset { background: #ff4757; color: white; font-weight: bold; cursor: pointer; border: none; font-size: 12px; width: auto; padding: 10px 20px; }
-        
-        .product-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.05); margin-bottom: 8px; border-radius: 8px; border-left: 4px solid #00f3ff; }
-        .product-info { display: flex; align-items: center; gap: 15px; }
-        .preview-img { width: 50px; height: 50px; object-fit: contain; border-radius: 6px; background: #000; border: 1px solid #333; }
-        
-        .action-btns { display: flex; gap: 8px; }
-        .edit-btn { background: #ffb142; color: black; padding: 8px 15px; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
-        .del-btn { background: #ff4757; color: white; padding: 8px 15px; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
-        
-        h3 { margin-top: 30px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #a1a1aa; }
+        .del-btn { background: #2d2d35; color: var(--danger); padding: 10px 18px; border: none; cursor: pointer; border-radius: 10px; font-weight: bold; transition: 0.2s; }
+        .del-btn:hover { background: var(--danger); color: white; }
+
+        h3 { margin-top: 40px; color: #555; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #222; padding-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<div class="admin-container">
+<div id="login-overlay">
+    <div class="login-box">
+        <h1 style="color:var(--primary); margin-top:0;">ADMIN LOGIN</h1>
+        <p style="color:#888;">Lütfen paneli açmak için şifreyi girin.</p>
+        <input type="password" id="adminPass" placeholder="Şifre" style="text-align:center;">
+        <button class="btn-add" onclick="checkLogin()">GİRİŞ YAP</button>
+    </div>
+</div>
+
+<div class="admin-container" id="main-content">
     <h2>
-        Ürün Yönetimi 
-        <button class="btn-reset" onclick="resetToDefaults()">TÜMÜNÜ SİL</button>
+        <span>PC</span> BUILDER ADMIN
+        <button class="btn-reset" onclick="resetToDefaults()">TÜM VERİLERİ SIFIRLA</button>
     </h2>
     
     <div class="form-group" id="form-box">
-        <h4 id="form-title" style="margin-bottom: 15px; color: #00f3ff;">Yeni Ürün Ekle</h4>
+        <h3 id="form-title" style="margin: 0 0 20px 0; border:none; color: white;">+ YENİ ÜRÜN EKLE</h3>
         <input type="hidden" id="edit-id">
         
-        <label>Kategori Seçin:</label>
-        <select id="cat">
-            <option value="cpu">İşlemci</option>
-            <option value="motherboard">Anakart</option>
-            <option value="gpu">Ekran Kartı</option>
-            <option value="ram">Bellek</option>
-            <option value="ssd">SSD</option>
-            <option value="case">Kasa</option>
-            <option value="cooler">Soğutma</option>
-        </select>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+                <label>KATEGORİ</label>
+                <select id="cat">
+                    <option value="cpu">İşlemci</option>
+                    <option value="motherboard">Anakart</option>
+                    <option value="gpu">Ekran Kartı</option>
+                    <option value="ram">Bellek</option>
+                    <option value="ssd">SSD</option>
+                    <option value="case">Kasa</option>
+                    <option value="cooler">Soğutma</option>
+                </select>
+            </div>
+            <div>
+                <label>FİYAT (₺)</label>
+                <input type="text" id="price" placeholder="21.000">
+            </div>
+        </div>
         
-        <label>Ürün Adı:</label>
-        <input type="text" id="name" placeholder="Örn: RTX 4090">
+        <label>ÜRÜN ADI</label>
+        <input type="text" id="name" placeholder="Örn: AMD Ryzen 9 7950X">
         
-        <label>Fiyat (₺):</label>
-        <input type="text" id="price" placeholder="Örn: 21.000 veya 21000">
-        
-        <label>Ürün Resmi:</label>
+        <label>ÜRÜN GÖRSELİ</label>
         <input type="file" id="imgFile" accept="image/*">
         
-        <button class="btn-add" id="add-btn" onclick="addItem()">SİSTEME EKLE</button>
-        <button class="btn-update" id="update-btn" onclick="updateItem()">DEĞİŞİKLİKLERİ KAYDET</button>
-        <button id="cancel-btn" style="display:none; background: #333; cursor:pointer;" onclick="cancelEdit()">İPTAL ET</button>
+        <button class="btn-add" id="add-btn" onclick="addItem()">SİSTEME KAYDET</button>
+        <button class="btn-update" id="update-btn" onclick="updateItem()">DEĞİŞİKLİKLERİ UYGULA</button>
+        <button id="cancel-btn" style="display:none; background: transparent; border: 1px solid #444; color: #888; cursor:pointer;" onclick="cancelEdit()">İPTAL ET</button>
     </div>
 
     <div id="itemsContainer"></div>
 </div>
 
 <script>
-    
+    // ŞİFRE KONTROLÜ
+    function checkLogin() {
+        const pass = document.getElementById('adminPass').value;
+        if(pass === "admin123") {
+            document.getElementById('login-overlay').style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById('login-overlay').style.display = "none";
+                document.getElementById('main-content').style.display = "block";
+            }, 500);
+        } else {
+            alert("Hatalı Şifre!");
+        }
+    }
+
     const defaultData = {
         cpu: { title: "İşlemci", next: "motherboard", items: [] },
         motherboard: { title: "Anakart", next: "gpu", items: [] },
@@ -86,10 +234,8 @@
     let database = JSON.parse(localStorage.getItem('pcBuilderDB')) || defaultData;
     let currentEditImg = "";
 
-    // Fiyatı temizleme fonksiyonu (Noktaları siler)
     function cleanPrice(priceVal) {
         if(!priceVal) return 0;
-        // Nokta veya virgül varsa temizle, sadece sayıları tut
         let cleaned = priceVal.toString().replace(/[^0-9]/g, '');
         return parseInt(cleaned) || 0;
     }
@@ -106,11 +252,10 @@
     async function addItem() {
         const cat = document.getElementById('cat').value;
         const name = document.getElementById('name').value;
-        const priceInput = document.getElementById('price').value;
-        const price = cleanPrice(priceInput); // Fiyatı temizle
+        const price = cleanPrice(document.getElementById('price').value);
         const fileInput = document.getElementById('imgFile');
         
-        if(!name || price <= 0) return alert("Lütfen geçerli isim ve fiyat girin!");
+        if(!name || price <= 0) return alert("Lütfen bilgileri tam doldurun!");
 
         let imgData = "https://via.placeholder.com/150";
         if (fileInput.files.length > 0) {
@@ -120,7 +265,6 @@
         database[cat].items.push({ id: Date.now(), name, price, img: imgData });
         saveAndRefresh();
         clearForm();
-        alert("Ürün Eklendi!");
     }
 
     function editItem(cat, id) {
@@ -130,15 +274,14 @@
         document.getElementById('edit-id').value = id;
         document.getElementById('cat').value = cat;
         document.getElementById('name').value = item.name;
-        // Fiyatı kutuya yazarken okunaklı olması için nokta ekleyelim
         document.getElementById('price').value = item.price.toLocaleString('tr-TR');
         currentEditImg = item.img;
 
         document.getElementById('add-btn').style.display = "none";
         document.getElementById('update-btn').style.display = "block";
         document.getElementById('cancel-btn').style.display = "block";
-        document.getElementById('form-title').innerText = "Düzenleniyor: " + item.name;
-        window.scrollTo(0,0);
+        document.getElementById('form-title').innerText = "DÜZENLENİYOR";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function updateItem() {
@@ -148,35 +291,22 @@
         const price = cleanPrice(document.getElementById('price').value);
         const fileInput = document.getElementById('imgFile');
 
-        let found = false;
         for (let c in database) {
-            const index = database[c].items.findIndex(i => i.id === id);
-            if (index !== -1) {
-                if (c !== cat) {
-                    database[c].items.splice(index, 1);
-                } else {
-                    database[c].items[index].name = name;
-                    database[c].items[index].price = price;
-                    if (fileInput.files.length > 0) {
-                        database[c].items[index].img = await getBase64(fileInput.files[0]);
-                    }
-                    found = true;
-                }
+            const idx = database[c].items.findIndex(i => i.id === id);
+            if (idx !== -1) {
+                database[c].items.splice(idx, 1);
                 break;
             }
         }
 
-        if (!found) {
-            let imgData = currentEditImg;
-            if (fileInput.files.length > 0) {
-                imgData = await getBase64(fileInput.files[0]);
-            }
-            database[cat].items.push({ id, name, price, img: imgData });
+        let imgData = currentEditImg;
+        if (fileInput.files.length > 0) {
+            imgData = await getBase64(fileInput.files[0]);
         }
+        database[cat].items.push({ id, name, price, img: imgData });
 
         saveAndRefresh();
         cancelEdit();
-        alert("Güncellendi!");
     }
 
     function cancelEdit() {
@@ -184,11 +314,11 @@
         document.getElementById('add-btn').style.display = "block";
         document.getElementById('update-btn').style.display = "none";
         document.getElementById('cancel-btn').style.display = "none";
-        document.getElementById('form-title').innerText = "Yeni Ürün Ekle";
+        document.getElementById('form-title').innerText = "+ YENİ ÜRÜN EKLE";
     }
 
     function deleteItem(cat, id) {
-        if(confirm("Silmek istediğine emin misin?")) {
+        if(confirm("Bu parça silinecek?")) {
             database[cat].items = database[cat].items.filter(i => i.id !== id);
             saveAndRefresh();
         }
@@ -207,7 +337,7 @@
     }
 
     function resetToDefaults() {
-        if(confirm("DİKKAT: Tüm ürünler silinecek!")) {
+        if(confirm("Tüm sistem sıfırlanacak. Emin misiniz?")) {
             database = JSON.parse(JSON.stringify(defaultData));
             saveAndRefresh();
         }
@@ -215,22 +345,24 @@
 
     function render() {
         const container = document.getElementById('itemsContainer');
-        container.innerHTML = '<h3>Kayıtlı Parçalar</h3>';
+        container.innerHTML = '<h3>ENVANTER LİSTESİ</h3>';
         Object.keys(database).forEach(cat => {
             database[cat].items.forEach(item => {
                 container.innerHTML += `
                     <div class="product-item">
                         <div class="product-info">
-                            <img src="${item.img}" class="preview-img">
-                            <div>
-                                <div style="font-size: 12px; color: #00f3ff;">${cat.toUpperCase()}</div>
-                                <div>${item.name}</div>
-                                <div style="color: #3ae374; font-weight: bold;">${item.price.toLocaleString('tr-TR')} ₺</div>
+                            <div class="img-container">
+                                <img src="${item.img}" class="preview-img">
+                            </div>
+                            <div class="item-details">
+                                <small style="color: #666; font-size: 10px; letter-spacing: 1px;">${cat.toUpperCase()}</small>
+                                <h4>${item.name}</h4>
+                                <p>${item.price.toLocaleString('tr-TR')} ₺</p>
                             </div>
                         </div>
                         <div class="action-btns">
-                            <button class="edit-btn" onclick="editItem('${cat}', ${item.id})">Düzenle</button>
-                            <button class="del-btn" onclick="deleteItem('${cat}', ${item.id})">Sil</button>
+                            <button class="edit-btn" onclick="editItem('${cat}', ${item.id})">DÜZENLE</button>
+                            <button class="del-btn" onclick="deleteItem('${cat}', ${item.id})">SİL</button>
                         </div>
                     </div>`;
             });
@@ -240,4 +372,3 @@
 </script>
 </body>
 </html>
-

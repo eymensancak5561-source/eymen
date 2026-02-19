@@ -9,20 +9,26 @@
         .admin-container { max-width: 800px; margin: auto; background: #1c1c21; padding: 30px; border-radius: 20px; border: 1px solid #2d2d35; }
         h2 { color: #00f3ff; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .form-group { background: #151518; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-        input, select, button { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #2d2d35; background: #000; color: white; }
+        
+        /* input alanlarını güncelledim */
+        input, select, button { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #2d2d35; background: #000; color: white; font-size: 16px; }
+        input:focus { border-color: #00f3ff; outline: none; }
+        
         input[type="file"] { background: #1c1c21; cursor: pointer; }
         
         .btn-add { background: #00f3ff; color: black; font-weight: bold; cursor: pointer; border: none; }
         .btn-update { background: #3ae374; color: black; font-weight: bold; cursor: pointer; border: none; display: none; }
-        .btn-reset { background: #ff9f43; color: black; font-weight: bold; cursor: pointer; border: none; font-size: 12px; width: auto; padding: 10px 20px; }
+        .btn-reset { background: #ff4757; color: white; font-weight: bold; cursor: pointer; border: none; font-size: 12px; width: auto; padding: 10px 20px; }
         
         .product-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.05); margin-bottom: 8px; border-radius: 8px; border-left: 4px solid #00f3ff; }
         .product-info { display: flex; align-items: center; gap: 15px; }
-        .preview-img { width: 45px; height: 45px; object-fit: contain; border-radius: 6px; background: #000; border: 1px solid #333; }
+        .preview-img { width: 50px; height: 50px; object-fit: contain; border-radius: 6px; background: #000; border: 1px solid #333; }
         
         .action-btns { display: flex; gap: 8px; }
-        .edit-btn { background: #ffb142; color: black; width: auto; padding: 6px 12px; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
-        .del-btn { background: #ff4757; color: white; width: auto; padding: 6px 12px; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .edit-btn { background: #ffb142; color: black; padding: 8px 15px; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .del-btn { background: #ff4757; color: white; padding: 8px 15px; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        
+        h3 { margin-top: 30px; border-bottom: 1px solid #333; padding-bottom: 10px; color: #a1a1aa; }
     </style>
 </head>
 <body>
@@ -30,12 +36,14 @@
 <div class="admin-container">
     <h2>
         Ürün Yönetimi 
-        <button class="btn-reset" onclick="resetToDefaults()">FABRİKA AYARLARINA DÖN</button>
+        <button class="btn-reset" onclick="resetToDefaults()">TÜMÜNÜ SİL</button>
     </h2>
     
     <div class="form-group" id="form-box">
-        <h4 id="form-title" style="margin-bottom: 15px; color: #a1a1aa;">Yeni Ürün Ekle</h4>
-        <input type="hidden" id="edit-id"> <label>Kategori:</label>
+        <h4 id="form-title" style="margin-bottom: 15px; color: #00f3ff;">Yeni Ürün Ekle</h4>
+        <input type="hidden" id="edit-id">
+        
+        <label>Kategori Seçin:</label>
         <select id="cat">
             <option value="cpu">İşlemci</option>
             <option value="motherboard">Anakart</option>
@@ -46,15 +54,18 @@
             <option value="cooler">Soğutma</option>
         </select>
         
-        <input type="text" id="name" placeholder="Ürün Adı">
-        <input type="number" id="price" placeholder="Fiyat (₺)">
+        <label>Ürün Adı:</label>
+        <input type="text" id="name" placeholder="Örn: RTX 4090">
         
-        <label>Ürün Resmi (Bilgisayardan Seç):</label>
+        <label>Fiyat (₺):</label>
+        <input type="text" id="price" placeholder="Örn: 21.000 veya 21000">
+        
+        <label>Ürün Resmi:</label>
         <input type="file" id="imgFile" accept="image/*">
         
-        <button class="btn-add" id="add-btn" onclick="addItem()">ÜRÜNÜ EKLE</button>
+        <button class="btn-add" id="add-btn" onclick="addItem()">SİSTEME EKLE</button>
         <button class="btn-update" id="update-btn" onclick="updateItem()">DEĞİŞİKLİKLERİ KAYDET</button>
-        <button id="cancel-btn" style="display:none; background: #333;" onclick="cancelEdit()">İPTAL</button>
+        <button id="cancel-btn" style="display:none; background: #333; cursor:pointer;" onclick="cancelEdit()">İPTAL ET</button>
     </div>
 
     <div id="itemsContainer"></div>
@@ -62,17 +73,25 @@
 
 <script>
     const defaultData = {
-        cpu: { title: "İşlemci Seçin", next: "motherboard", items: [] },
-        motherboard: { title: "Anakart Seçin", next: "gpu", items: [] },
-        gpu: { title: "Ekran Kartı Seçin", next: "ram", items: [] },
-        ram: { title: "Bellek Seçin", next: "ssd", items: [] },
-        ssd: { title: "SSD Seçin", next: "case", items: [] },
-        case: { title: "Kasa Seçin", next: "cooler", items: [] },
-        cooler: { title: "Sıvı Soğutma Seçin", next: null, items: [] }
+        cpu: { title: "İşlemci", next: "motherboard", items: [] },
+        motherboard: { title: "Anakart", next: "gpu", items: [] },
+        gpu: { title: "Ekran Kartı", next: "ram", items: [] },
+        ram: { title: "Bellek", next: "ssd", items: [] },
+        ssd: { title: "SSD", next: "case", items: [] },
+        case: { title: "Kasa", next: "cooler", items: [] },
+        cooler: { title: "Soğutma", next: null, items: [] }
     };
 
     let database = JSON.parse(localStorage.getItem('pcBuilderDB')) || defaultData;
-    let currentEditImg = ""; // Düzenleme sırasında resmi değiştirmezsek eski resmi tutmak için
+    let currentEditImg = "";
+
+    // Fiyatı temizleme fonksiyonu (Noktaları siler)
+    function cleanPrice(priceVal) {
+        if(!priceVal) return 0;
+        // Nokta veya virgül varsa temizle, sadece sayıları tut
+        let cleaned = priceVal.toString().replace(/[^0-9]/g, '');
+        return parseInt(cleaned) || 0;
+    }
 
     function getBase64(file) {
         return new Promise((resolve, reject) => {
@@ -86,13 +105,13 @@
     async function addItem() {
         const cat = document.getElementById('cat').value;
         const name = document.getElementById('name').value;
-        const price = parseInt(document.getElementById('price').value);
+        const priceInput = document.getElementById('price').value;
+        const price = cleanPrice(priceInput); // Fiyatı temizle
         const fileInput = document.getElementById('imgFile');
         
-        if(!name || !price) return alert("İsim ve fiyat girilmelidir!");
+        if(!name || price <= 0) return alert("Lütfen geçerli isim ve fiyat girin!");
 
         let imgData = "https://via.placeholder.com/150";
-
         if (fileInput.files.length > 0) {
             imgData = await getBase64(fileInput.files[0]);
         }
@@ -100,48 +119,41 @@
         database[cat].items.push({ id: Date.now(), name, price, img: imgData });
         saveAndRefresh();
         clearForm();
+        alert("Ürün Eklendi!");
     }
 
-    // --- DÜZENLEME MODUNU AÇAN FONKSİYON ---
     function editItem(cat, id) {
         const item = database[cat].items.find(i => i.id === id);
         if(!item) return;
 
-        // Formu doldur
         document.getElementById('edit-id').value = id;
         document.getElementById('cat').value = cat;
         document.getElementById('name').value = item.name;
-        document.getElementById('price').value = item.price;
-        currentEditImg = item.img; // Eski resmi hafızada tut
+        // Fiyatı kutuya yazarken okunaklı olması için nokta ekleyelim
+        document.getElementById('price').value = item.price.toLocaleString('tr-TR');
+        currentEditImg = item.img;
 
-        // Butonları değiştir
         document.getElementById('add-btn').style.display = "none";
         document.getElementById('update-btn').style.display = "block";
         document.getElementById('cancel-btn').style.display = "block";
-        document.getElementById('form-title').innerText = "Ürünü Düzenle: " + item.name;
-        document.getElementById('form-box').style.borderColor = "#ffb142";
-        
-        window.scrollTo(0,0); // Sayfayı yukarı kaydır
+        document.getElementById('form-title').innerText = "Düzenleniyor: " + item.name;
+        window.scrollTo(0,0);
     }
 
-    // --- GÜNCELLEMEYİ KAYDEDEN FONKSİYON ---
     async function updateItem() {
         const id = parseInt(document.getElementById('edit-id').value);
         const cat = document.getElementById('cat').value;
         const name = document.getElementById('name').value;
-        const price = parseInt(document.getElementById('price').value);
+        const price = cleanPrice(document.getElementById('price').value);
         const fileInput = document.getElementById('imgFile');
 
-        // Önce ürünü bul (tüm kategorilerde ara çünkü kategori değişmiş olabilir)
         let found = false;
         for (let c in database) {
             const index = database[c].items.findIndex(i => i.id === id);
             if (index !== -1) {
-                // Eğer kategori değiştiyse eski kategoriden sil
                 if (c !== cat) {
                     database[c].items.splice(index, 1);
                 } else {
-                    // Kategori aynıysa verileri güncelle
                     database[c].items[index].name = name;
                     database[c].items[index].price = price;
                     if (fileInput.files.length > 0) {
@@ -153,7 +165,6 @@
             }
         }
 
-        // Eğer kategori değiştiyse yeni kategoriye ekle
         if (!found) {
             let imgData = currentEditImg;
             if (fileInput.files.length > 0) {
@@ -164,7 +175,7 @@
 
         saveAndRefresh();
         cancelEdit();
-        alert("Ürün güncellendi!");
+        alert("Güncellendi!");
     }
 
     function cancelEdit() {
@@ -173,11 +184,10 @@
         document.getElementById('update-btn').style.display = "none";
         document.getElementById('cancel-btn').style.display = "none";
         document.getElementById('form-title').innerText = "Yeni Ürün Ekle";
-        document.getElementById('form-box').style.borderColor = "#333";
     }
 
     function deleteItem(cat, id) {
-        if(confirm("Bu ürünü silmek istediğine emin misin?")) {
+        if(confirm("Silmek istediğine emin misin?")) {
             database[cat].items = database[cat].items.filter(i => i.id !== id);
             saveAndRefresh();
         }
@@ -196,23 +206,26 @@
     }
 
     function resetToDefaults() {
-        if(confirm("Tüm veriler silinecek! Emin misin?")) {
+        if(confirm("DİKKAT: Tüm ürünler silinecek!")) {
             database = JSON.parse(JSON.stringify(defaultData));
             saveAndRefresh();
-            alert("Sıfırlandı!");
         }
     }
 
     function render() {
         const container = document.getElementById('itemsContainer');
-        container.innerHTML = '<h3>Mevcut Ürünler</h3>';
+        container.innerHTML = '<h3>Kayıtlı Parçalar</h3>';
         Object.keys(database).forEach(cat => {
             database[cat].items.forEach(item => {
                 container.innerHTML += `
                     <div class="product-item">
                         <div class="product-info">
                             <img src="${item.img}" class="preview-img">
-                            <span><b>${cat.toUpperCase()}</b> | ${item.name} - ${item.price}₺</span>
+                            <div>
+                                <div style="font-size: 12px; color: #00f3ff;">${cat.toUpperCase()}</div>
+                                <div>${item.name}</div>
+                                <div style="color: #3ae374; font-weight: bold;">${item.price.toLocaleString('tr-TR')} ₺</div>
+                            </div>
                         </div>
                         <div class="action-btns">
                             <button class="edit-btn" onclick="editItem('${cat}', ${item.id})">Düzenle</button>

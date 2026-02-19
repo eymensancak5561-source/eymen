@@ -2,22 +2,27 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Sistem Yönetim Paneli</title>
+    <title>Sistem Yönetim Paneli | Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;900&display=swap" rel="stylesheet">
     <style>
         body { background: #0d0d0f; color: white; font-family: 'Outfit', sans-serif; padding: 20px; }
         .admin-container { max-width: 800px; margin: auto; background: #1c1c21; padding: 30px; border-radius: 20px; border: 1px solid #2d2d35; }
         h2 { color: #00f3ff; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .form-group { background: #151518; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .form-group { background: #151518; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
         input, select, button { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #2d2d35; background: #000; color: white; }
-        /* Dosya seçme butonu için özel stil */
         input[type="file"] { background: #1c1c21; cursor: pointer; }
+        
         .btn-add { background: #00f3ff; color: black; font-weight: bold; cursor: pointer; border: none; }
+        .btn-update { background: #3ae374; color: black; font-weight: bold; cursor: pointer; border: none; display: none; }
         .btn-reset { background: #ff9f43; color: black; font-weight: bold; cursor: pointer; border: none; font-size: 12px; width: auto; padding: 10px 20px; }
-        .product-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); margin-bottom: 5px; border-radius: 5px; border-left: 3px solid #00f3ff; }
+        
+        .product-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.05); margin-bottom: 8px; border-radius: 8px; border-left: 4px solid #00f3ff; }
         .product-info { display: flex; align-items: center; gap: 15px; }
-        .preview-img { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; background: #000; }
-        .del-btn { background: #ff4757; width: auto; margin-bottom: 0; padding: 5px 15px; border: none; cursor: pointer; border-radius: 5px; }
+        .preview-img { width: 45px; height: 45px; object-fit: contain; border-radius: 6px; background: #000; border: 1px solid #333; }
+        
+        .action-btns { display: flex; gap: 8px; }
+        .edit-btn { background: #ffb142; color: black; width: auto; padding: 6px 12px; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .del-btn { background: #ff4757; color: white; width: auto; padding: 6px 12px; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -28,8 +33,9 @@
         <button class="btn-reset" onclick="resetToDefaults()">FABRİKA AYARLARINA DÖN</button>
     </h2>
     
-    <div class="form-group">
-        <label>Kategori:</label>
+    <div class="form-group" id="form-box">
+        <h4 id="form-title" style="margin-bottom: 15px; color: #a1a1aa;">Yeni Ürün Ekle</h4>
+        <input type="hidden" id="edit-id"> <label>Kategori:</label>
         <select id="cat">
             <option value="cpu">İşlemci</option>
             <option value="motherboard">Anakart</option>
@@ -39,13 +45,16 @@
             <option value="case">Kasa</option>
             <option value="cooler">Soğutma</option>
         </select>
+        
         <input type="text" id="name" placeholder="Ürün Adı">
         <input type="number" id="price" placeholder="Fiyat (₺)">
         
-        <label>Ürün Resmi Seç (PC'den):</label>
+        <label>Ürün Resmi (Bilgisayardan Seç):</label>
         <input type="file" id="imgFile" accept="image/*">
         
-        <button class="btn-add" onclick="addItem()">ÜRÜNÜ EKLE</button>
+        <button class="btn-add" id="add-btn" onclick="addItem()">ÜRÜNÜ EKLE</button>
+        <button class="btn-update" id="update-btn" onclick="updateItem()">DEĞİŞİKLİKLERİ KAYDET</button>
+        <button id="cancel-btn" style="display:none; background: #333;" onclick="cancelEdit()">İPTAL</button>
     </div>
 
     <div id="itemsContainer"></div>
@@ -63,8 +72,8 @@
     };
 
     let database = JSON.parse(localStorage.getItem('pcBuilderDB')) || defaultData;
+    let currentEditImg = ""; // Düzenleme sırasında resmi değiştirmezsek eski resmi tutmak için
 
-    // Resmi Base64 formatına çeviren yardımcı fonksiyon
     function getBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -82,45 +91,117 @@
         
         if(!name || !price) return alert("İsim ve fiyat girilmelidir!");
 
-        let imgData = "https://via.placeholder.com/150"; // Varsayılan resim
+        let imgData = "https://via.placeholder.com/150";
 
-        // Eğer bir dosya seçildiyse onu işle
         if (fileInput.files.length > 0) {
-            try {
-                imgData = await getBase64(fileInput.files[0]);
-            } catch (err) {
-                console.error("Resim yükleme hatası:", err);
-            }
+            imgData = await getBase64(fileInput.files[0]);
         }
 
         database[cat].items.push({ id: Date.now(), name, price, img: imgData });
-        save();
-        render();
+        saveAndRefresh();
+        clearForm();
+    }
+
+    // --- DÜZENLEME MODUNU AÇAN FONKSİYON ---
+    function editItem(cat, id) {
+        const item = database[cat].items.find(i => i.id === id);
+        if(!item) return;
+
+        // Formu doldur
+        document.getElementById('edit-id').value = id;
+        document.getElementById('cat').value = cat;
+        document.getElementById('name').value = item.name;
+        document.getElementById('price').value = item.price;
+        currentEditImg = item.img; // Eski resmi hafızada tut
+
+        // Butonları değiştir
+        document.getElementById('add-btn').style.display = "none";
+        document.getElementById('update-btn').style.display = "block";
+        document.getElementById('cancel-btn').style.display = "block";
+        document.getElementById('form-title').innerText = "Ürünü Düzenle: " + item.name;
+        document.getElementById('form-box').style.borderColor = "#ffb142";
         
-        // Formu temizle
-        document.getElementById('name').value = "";
-        document.getElementById('price').value = "";
-        document.getElementById('imgFile').value = "";
-        
-        alert("Ürün başarıyla eklendi!");
+        window.scrollTo(0,0); // Sayfayı yukarı kaydır
+    }
+
+    // --- GÜNCELLEMEYİ KAYDEDEN FONKSİYON ---
+    async function updateItem() {
+        const id = parseInt(document.getElementById('edit-id').value);
+        const cat = document.getElementById('cat').value;
+        const name = document.getElementById('name').value;
+        const price = parseInt(document.getElementById('price').value);
+        const fileInput = document.getElementById('imgFile');
+
+        // Önce ürünü bul (tüm kategorilerde ara çünkü kategori değişmiş olabilir)
+        let found = false;
+        for (let c in database) {
+            const index = database[c].items.findIndex(i => i.id === id);
+            if (index !== -1) {
+                // Eğer kategori değiştiyse eski kategoriden sil
+                if (c !== cat) {
+                    database[c].items.splice(index, 1);
+                } else {
+                    // Kategori aynıysa verileri güncelle
+                    database[c].items[index].name = name;
+                    database[c].items[index].price = price;
+                    if (fileInput.files.length > 0) {
+                        database[c].items[index].img = await getBase64(fileInput.files[0]);
+                    }
+                    found = true;
+                }
+                break;
+            }
+        }
+
+        // Eğer kategori değiştiyse yeni kategoriye ekle
+        if (!found) {
+            let imgData = currentEditImg;
+            if (fileInput.files.length > 0) {
+                imgData = await getBase64(fileInput.files[0]);
+            }
+            database[cat].items.push({ id, name, price, img: imgData });
+        }
+
+        saveAndRefresh();
+        cancelEdit();
+        alert("Ürün güncellendi!");
+    }
+
+    function cancelEdit() {
+        clearForm();
+        document.getElementById('add-btn').style.display = "block";
+        document.getElementById('update-btn').style.display = "none";
+        document.getElementById('cancel-btn').style.display = "none";
+        document.getElementById('form-title').innerText = "Yeni Ürün Ekle";
+        document.getElementById('form-box').style.borderColor = "#333";
     }
 
     function deleteItem(cat, id) {
-        database[cat].items = database[cat].items.filter(i => i.id !== id);
-        save();
-        render();
-    }
-
-    function resetToDefaults() {
-        if(confirm("Tüm veriler silinecek ve varsayılanlar yüklenecek. Emin misin?")) {
-            database = JSON.parse(JSON.stringify(defaultData));
-            save();
-            render();
-            alert("Sistem sıfırlandı!");
+        if(confirm("Bu ürünü silmek istediğine emin misin?")) {
+            database[cat].items = database[cat].items.filter(i => i.id !== id);
+            saveAndRefresh();
         }
     }
 
-    function save() { localStorage.setItem('pcBuilderDB', JSON.stringify(database)); }
+    function saveAndRefresh() {
+        localStorage.setItem('pcBuilderDB', JSON.stringify(database));
+        render();
+    }
+
+    function clearForm() {
+        document.getElementById('name').value = "";
+        document.getElementById('price').value = "";
+        document.getElementById('imgFile').value = "";
+        document.getElementById('edit-id').value = "";
+    }
+
+    function resetToDefaults() {
+        if(confirm("Tüm veriler silinecek! Emin misin?")) {
+            database = JSON.parse(JSON.stringify(defaultData));
+            saveAndRefresh();
+            alert("Sıfırlandı!");
+        }
+    }
 
     function render() {
         const container = document.getElementById('itemsContainer');
@@ -133,7 +214,10 @@
                             <img src="${item.img}" class="preview-img">
                             <span><b>${cat.toUpperCase()}</b> | ${item.name} - ${item.price}₺</span>
                         </div>
-                        <button class="del-btn" onclick="deleteItem('${cat}', ${item.id})">Sil</button>
+                        <div class="action-btns">
+                            <button class="edit-btn" onclick="editItem('${cat}', ${item.id})">Düzenle</button>
+                            <button class="del-btn" onclick="deleteItem('${cat}', ${item.id})">Sil</button>
+                        </div>
                     </div>`;
             });
         });

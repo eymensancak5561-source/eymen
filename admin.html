@@ -2,43 +2,136 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lig Admin - Giriş</title>
     <style>
         :root { --p: #ff0000; --bg: #0f0f0f; --card: #1f1f1f; --text: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 15px; /* Mobilde daha geniş alan için azaltıldı */
+            margin: 0;
+        }
+
         #login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 100; }
-        .login-card { background: var(--card); padding: 40px; border-radius: 15px; border: 1px solid var(--p); text-align: center; }
+        
+        .login-card { 
+            background: var(--card); 
+            padding: 30px 20px; 
+            border-radius: 15px; 
+            border: 1px solid var(--p); 
+            text-align: center; 
+            width: 85%; /* Mobilde kart genişliği */
+            max-width: 350px;
+        }
+
         #admin-panel { display: none; width: 100%; max-width: 500px; }
-        .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-        input { background: #000; border: 1px solid #444; color: white; padding: 12px; border-radius: 8px; text-align: center; font-size: 1.1rem; width: 80%; margin: 10px 0; }
-        button { background: var(--p); border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; color: white; transition: 0.3s; }
-        .match-item { background: #2a2a2a; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px; border-left: 5px solid var(--p); }
+        
+        .card { 
+            background: var(--card); 
+            padding: 20px; 
+            border-radius: 12px; 
+            margin-bottom: 20px; 
+            border: 1px solid #333; 
+        }
+
+        /* Inputlar mobilde daha kolay tıklanması için büyütüldü */
+        input { 
+            background: #000; 
+            border: 1px solid #444; 
+            color: white; 
+            padding: 15px 10px; 
+            border-radius: 8px; 
+            text-align: center; 
+            font-size: 1.2rem; /* Yazı tipi büyütüldü */
+            width: 90%; 
+            margin: 10px 0;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--p); }
+
+        /* Butonlar parmakla basılacak kadar büyük yapıldı */
+        button { 
+            background: var(--p); 
+            border: none; 
+            padding: 16px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            width: 100%; 
+            color: white; 
+            transition: 0.3s; 
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+
+        .match-item { 
+            background: #2a2a2a; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            border-left: 5px solid var(--p); 
+        }
+
+        .match-item span {
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
         .btn-group { display: flex; gap: 10px; }
-        .edit-btn { background: #fbbf24; color: black; flex: 1; border-radius: 5px; border:none; cursor: pointer; padding: 8px; }
-        .del-btn { background: #ff4444; color: white; flex: 1; border-radius: 5px; border:none; cursor: pointer; padding: 8px; }
+        
+        .edit-btn { background: #fbbf24; color: black; flex: 1; border-radius: 8px; border:none; cursor: pointer; padding: 12px; font-weight: bold; }
+        .del-btn { background: #ff4444; color: white; flex: 1; border-radius: 8px; border:none; cursor: pointer; padding: 12px; font-weight: bold; }
+
+        /* Mobil Skor Giriş Alanı Düzenlemesi */
+        .score-grid {
+            display: grid; 
+            grid-template-columns: 1fr auto 1fr; 
+            align-items: center; 
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        label { display: block; margin-bottom: 5px; color: #aaa; }
     </style>
 </head>
 <body>
     <div id="login-screen">
         <div class="login-card">
             <h2>🔐 YouTube Lig Admin</h2>
-            <input type="password" id="passInput" placeholder="Şifre...">
+            <input type="password" id="passInput" placeholder="Şifre..." autocomplete="current-password">
             <button onclick="login()">GİRİŞ YAP</button>
         </div>
     </div>
 
     <div id="admin-panel">
-        <h2 style="text-align:center">MAÇ YÖNETİMİ</h2>
+        <h2 style="text-align:center; margin: 20px 0;">MAÇ YÖNETİMİ</h2>
         <div class="card">
-            <h3 id="form-title">Yeni Maç Kaydı</h3>
-            <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px;">
-                <div style="text-align:center"><label style="font-size: 12px;">EYMEN YAĞIZ</label><input type="number" id="s1" placeholder="Gol"></div>
-                <div style="margin-top:20px">VS</div>
-                <div style="text-align:center"><label style="font-size: 12px;">BERAT EFE</label><input type="number" id="s2" placeholder="Gol"></div>
+            <h3 id="form-title" style="margin-top:0">Yeni Maç Kaydı</h3>
+            <div class="score-grid">
+                <div style="text-align:center">
+                    <label style="font-size: 10px;">EYMEN YAĞIZ</label>
+                    <input type="number" id="s1" placeholder="0" inputmode="numeric">
+                </div>
+                <div style="margin-top:20px; font-weight: bold; color: var(--p);">VS</div>
+                <div style="text-align:center">
+                    <label style="font-size: 10px;">BERAT EFE</label>
+                    <input type="number" id="s2" placeholder="0" inputmode="numeric">
+                </div>
             </div>
             <input type="hidden" id="edit-id">
             <button id="main-btn" onclick="saveMatch()">KAYDET</button>
-            <button id="cancel-btn" onclick="resetForm()" style="background:#444; margin-top:5px; display:none;">İPTAL</button>
+            <button id="cancel-btn" onclick="resetForm()" style="background:#444; margin-top:10px; display:none;">İPTAL</button>
         </div>
         <div id="matchList"></div>
     </div>
@@ -46,52 +139,70 @@
     <script>
         const PASS = "admin123";
         let matches = JSON.parse(localStorage.getItem('efb_matches')) || [];
+        
         function login() {
             if(document.getElementById('passInput').value === PASS) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('admin-panel').style.display = 'block';
                 renderMatches();
+            } else {
+                alert("Şifre hatalı!");
             }
         }
+
         function saveMatch() {
-            const s1 = document.getElementById('s1').value === "" ? 0 : parseInt(document.getElementById('s1').value);
-            const s2 = document.getElementById('s2').value === "" ? 0 : parseInt(document.getElementById('s2').value);
+            const v1 = document.getElementById('s1').value;
+            const v2 = document.getElementById('s2').value;
+            const s1 = v1 === "" ? 0 : parseInt(v1);
+            const s2 = v2 === "" ? 0 : parseInt(v2);
             const editId = document.getElementById('edit-id').value;
+
             if(editId) {
                 const index = matches.findIndex(m => m.id == editId);
-                matches[index].s1 = s1; matches[index].s2 = s2;
+                matches[index].s1 = s1; 
+                matches[index].s2 = s2;
             } else {
                 matches.push({ id: Date.now(), s1, s2 });
             }
+            
             localStorage.setItem('efb_matches', JSON.stringify(matches));
-            resetForm(); renderMatches();
+            resetForm(); 
+            renderMatches();
         }
+
         function editMatch(id) {
             const m = matches.find(m => m.id == id);
             document.getElementById('s1').value = m.s1;
             document.getElementById('s2').value = m.s2;
             document.getElementById('edit-id').value = id;
-            document.getElementById('form-title').innerText = "Düzenle";
+            document.getElementById('form-title').innerText = "Maçı Düzenle";
             document.getElementById('main-btn').innerText = "GÜNCELLE";
             document.getElementById('cancel-btn').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Düzenle deyince yukarı kaydır
         }
+
         function deleteMatch(id) {
-            if(confirm("Silinsin mi?")) {
+            if(confirm("Bu maçı silmek istediğine emin misin?")) {
                 matches = matches.filter(m => m.id != id);
                 localStorage.setItem('efb_matches', JSON.stringify(matches));
                 renderMatches();
             }
         }
+
         function resetForm() {
-            document.getElementById('s1').value = ""; document.getElementById('s2').value = "";
-            document.getElementById('edit-id').value = ""; document.getElementById('main-btn').innerText = "KAYDET";
+            document.getElementById('s1').value = ""; 
+            document.getElementById('s2').value = "";
+            document.getElementById('edit-id').value = ""; 
+            document.getElementById('main-btn').innerText = "KAYDET";
+            document.getElementById('form-title').innerText = "Yeni Maç Kaydı";
             document.getElementById('cancel-btn').style.display = 'none';
         }
+
         function renderMatches() {
             const list = document.getElementById('matchList');
             list.innerHTML = matches.map(m => `
                 <div class="match-item">
-                    <span>EYMEN ${m.s1} - ${m.s2} BERAT</span>
+                    <span>EYMEN ${m.s1} — ${m.s2} BERAT</span>
                     <div class="btn-group">
                         <button class="edit-btn" onclick="editMatch(${m.id})">Düzenle</button>
                         <button class="del-btn" onclick="deleteMatch(${m.id})">Sil</button>

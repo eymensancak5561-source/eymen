@@ -20,11 +20,10 @@
             background: radial-gradient(circle at top, #1e1b4b 0%, #030712 100%);
             color: var(--text);
             margin: 0;
-            padding: 10px; /* Mobilde kenar boşluğu azaltıldı */
+            padding: 10px;
             overflow-x: hidden;
         }
 
-        /* Haber Bandı - Mobilde biraz daha ince */
         .news-ticker {
             background: rgba(255, 0, 0, 0.8);
             color: white;
@@ -58,7 +57,7 @@
         header { text-align: center; margin-bottom: 30px; }
         
         h1 {
-            font-size: calc(1.8rem + 2vw); /* Başlık ekran boyutuna göre büyür/küçülür */
+            font-size: calc(1.8rem + 2vw);
             text-transform: uppercase;
             letter-spacing: 4px;
             margin: 15px 0;
@@ -94,10 +93,10 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 40px rgba(0,0,0,0.5);
             margin-bottom: 20px;
-            overflow-x: auto; /* Mobilde tablonun kaymasını sağlar */
+            overflow-x: auto;
         }
 
-        table { width: 100%; border-collapse: collapse; min-width: 600px; /* Mobilde tablonun ezilmesini önler */ }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th { padding: 12px 8px; color: #64748b; font-size: 0.7rem; text-transform: uppercase; border-bottom: 2px solid #334155; }
         td { padding: 12px 8px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
 
@@ -117,7 +116,6 @@
         .win { background: #10b981; } .loss { background: #ef4444; } .draw { background: #6b7280; }
         .pts-font { font-size: 1.5rem; font-weight: 900; color: var(--gold); }
 
-        /* MAÇ SONUÇLARI TAM ORTALI MOBİL UYUMLU */
         .fixture-title {
             color: var(--primary);
             text-transform: uppercase;
@@ -143,7 +141,7 @@
             align-items: center;
             gap: 15px;
             border: 1px solid rgba(0, 212, 255, 0.2);
-            width: 95%; /* Mobilde daha geniş durur */
+            width: 95%;
             max-width: 450px;
             transition: 0.3s;
         }
@@ -157,7 +155,6 @@
             min-width: 50px; text-align: center;
         }
 
-        /* Mobilde tabloyu yana kaydır uyarısı */
         .scroll-hint {
             text-align: center; font-size: 0.7rem; color: #64748b; margin-bottom: 5px; display: none;
         }
@@ -207,8 +204,20 @@
     </div>
 
     <script>
+        // --- 🏆 MAÇ VERİLERİ BURAYA YAZILACAK 🏆 ---
+        // Berat veya Sen GitHub'da dosyayı düzenleyip buraya ekleme yapınca herkes görecek.
+        // s1: EYMEN, s2: BERAT
+        const MACLAR = [
+            { s1: 3, s2: 1 }, // 1. Maç örneği
+            { s1: 0, s2: 2 }, // 2. Maç örneği
+            // Yeni maç geldikçe altına ekleyin. Virgül koymayı unutmayın!
+        ];
+        // ------------------------------------------
+
         function updateStats() {
-            const matches = JSON.parse(localStorage.getItem('efb_matches')) || [];
+            // Artık localStorage yerine yukarıdaki MACLAR listesini kullanıyoruz
+            const matches = MACLAR; 
+            
             let players = {
                 "EYMEN YAĞIZ": { g:0, b:0, m:0, ag:0, yg:0, lastMatches: [] },
                 "BERAT EFE ÖZTEL": { g:0, b:0, m:0, ag:0, yg:0, lastMatches: [] }
@@ -282,8 +291,6 @@
         }
 
         updateStats();
-        window.addEventListener('storage', updateStats);
-        setInterval(updateStats, 2000);
     </script>
 </body>
 </html>

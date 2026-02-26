@@ -2,14 +2,14 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>eFootball Pro League | YouTube Edition</title>
     <style>
         :root {
             --primary: #00d4ff;
             --secondary: #0055ff;
             --bg: #030712;
-            --card-bg: rgba(17, 24, 39, 0.8);
+            --card-bg: rgba(17, 24, 39, 0.85);
             --text: #f3f4f6;
             --gold: #fbbf24;
             --neon-glow: 0 0 20px rgba(0, 212, 255, 0.5);
@@ -20,21 +20,21 @@
             background: radial-gradient(circle at top, #1e1b4b 0%, #030712 100%);
             color: var(--text);
             margin: 0;
-            padding: 20px;
+            padding: 10px; /* Mobilde kenar boşluğu azaltıldı */
             overflow-x: hidden;
         }
 
-        /* YouTube Haber Bandı */
+        /* Haber Bandı - Mobilde biraz daha ince */
         .news-ticker {
             background: rgba(255, 0, 0, 0.8);
             color: white;
-            padding: 10px 0;
+            padding: 8px 0;
             position: fixed;
             top: 0; left: 0; width: 100%;
             z-index: 1000;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             border-bottom: 2px solid var(--gold);
         }
 
@@ -52,16 +52,16 @@
         .container {
             width: 100%;
             max-width: 1000px;
-            margin: 60px auto 0 auto;
+            margin: 50px auto 0 auto;
         }
 
-        header { text-align: center; margin-bottom: 40px; }
+        header { text-align: center; margin-bottom: 30px; }
         
         h1 {
-            font-size: 3.5rem;
+            font-size: calc(1.8rem + 2vw); /* Başlık ekran boyutuna göre büyür/küçülür */
             text-transform: uppercase;
-            letter-spacing: 8px;
-            margin: 0;
+            letter-spacing: 4px;
+            margin: 15px 0;
             background: linear-gradient(to right, #fff, var(--primary), var(--gold));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -70,93 +70,99 @@
 
         .stats-summary {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
         }
 
         .stat-card {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
+            padding: 15px 10px;
+            border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(12px);
             text-align: center;
         }
 
-        .stat-card div { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+        .stat-card div { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
+        .stat-card small { font-size: 0.7rem; color: #9ca3af; }
 
         .table-wrapper, .fixture-wrapper {
             background: var(--card-bg);
-            border-radius: 20px;
-            padding: 25px;
+            border-radius: 15px;
+            padding: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+            overflow-x: auto; /* Mobilde tablonun kaymasını sağlar */
         }
 
-        table { width: 100%; border-collapse: collapse; }
-        th { padding: 15px; color: #64748b; font-size: 0.75rem; text-transform: uppercase; border-bottom: 2px solid #334155; }
-        td { padding: 15px 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; /* Mobilde tablonun ezilmesini önler */ }
+        th { padding: 12px 8px; color: #64748b; font-size: 0.7rem; text-transform: uppercase; border-bottom: 2px solid #334155; }
+        td { padding: 12px 8px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
 
-        .player-info { display: flex; align-items: center; gap: 15px; text-align: left; }
+        .player-info { display: flex; align-items: center; gap: 10px; text-align: left; }
         .avatar {
-            width: 45px; height: 45px; border-radius: 10px;
+            width: 35px; height: 35px; border-radius: 8px;
             display: flex; justify-content: center; align-items: center;
             font-weight: bold; background: #1e293b;
             border: 2px solid var(--primary);
+            font-size: 0.8rem;
         }
 
         .form-dot {
-            display: inline-block; width: 22px; height: 22px; border-radius: 4px;
-            margin: 0 2px; font-size: 11px; line-height: 22px; font-weight: bold; color: white;
+            display: inline-block; width: 18px; height: 18px; border-radius: 4px;
+            margin: 0 1px; font-size: 10px; line-height: 18px; font-weight: bold; color: white;
         }
         .win { background: #10b981; } .loss { background: #ef4444; } .draw { background: #6b7280; }
-        .pts-font { font-size: 2rem; font-weight: 900; color: var(--gold); }
+        .pts-font { font-size: 1.5rem; font-weight: 900; color: var(--gold); }
 
-        /* MAÇ SONUÇLARI TAM ORTALI STİL */
+        /* MAÇ SONUÇLARI TAM ORTALI MOBİL UYUMLU */
         .fixture-title {
             color: var(--primary);
             text-transform: uppercase;
             text-align: center;
-            letter-spacing: 3px;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
         }
         
         .week-list {
             display: flex;
             flex-direction: column;
-            align-items: center; /* Merkeze hizalar */
-            gap: 20px;
+            align-items: center;
+            gap: 15px;
         }
 
         .match-card {
             background: rgba(0, 0, 0, 0.4);
-            padding: 15px 30px;
-            border-radius: 50px; /* Oval tasarım */
+            padding: 12px 15px;
+            border-radius: 50px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 25px;
+            gap: 15px;
             border: 1px solid rgba(0, 212, 255, 0.2);
-            width: 100%;
-            max-width: 500px; /* Kartın çok yayılmasını engeller */
+            width: 95%; /* Mobilde daha geniş durur */
+            max-width: 450px;
             transition: 0.3s;
         }
         
-        .match-card:hover {
-            border-color: var(--primary);
-            box-shadow: var(--neon-glow);
-        }
-
-        .m-week { color: var(--gold); font-size: 0.7rem; font-weight: bold; min-width: 60px; }
-        .m-name { font-weight: bold; font-size: 1.1rem; width: 120px; }
+        .m-week { color: var(--gold); font-size: 0.6rem; font-weight: bold; min-width: 45px; }
+        .m-name { font-weight: bold; font-size: 0.85rem; width: 85px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .m-score { 
             background: var(--text); color: #000; 
-            padding: 5px 20px; border-radius: 8px; 
-            font-weight: 900; font-size: 1.4rem;
-            min-width: 60px; text-align: center;
+            padding: 4px 12px; border-radius: 6px; 
+            font-weight: 900; font-size: 1.1rem;
+            min-width: 50px; text-align: center;
+        }
+
+        /* Mobilde tabloyu yana kaydır uyarısı */
+        .scroll-hint {
+            text-align: center; font-size: 0.7rem; color: #64748b; margin-bottom: 5px; display: none;
+        }
+        @media (max-width: 768px) {
+            .scroll-hint { display: block; }
         }
     </style>
 </head>
@@ -164,7 +170,7 @@
 
     <div class="news-ticker">
         <div class="ticker-wrapper">
-            EYMEN YAĞIZ VS BERAT EFE ÖZTEL | BÜYÜK RİVALRY SEZONU BAŞLADI! | KANALIMIZA ABONE OLMAYI VE VİDEOYU BEĞENMEYİ UNUTMAYIN! | LİGDE REKABET KIZIŞIYOR! |
+            EYMEN YAĞIZ VS BERAT EFE ÖZTEL | BÜYÜK RİVALRY SEZONU BAŞLADI! | ABONE OLMAYI UNUTMAYIN! | LİGDE REKABET KIZIŞIYOR! |
         </div>
     </div>
 
@@ -174,8 +180,9 @@
             <div class="stats-summary" id="statsSummary"></div>
         </header>
 
+        <div class="scroll-hint">↔ Tabloyu yana kaydırabilirsiniz</div>
         <div class="table-wrapper">
-            <h3 class="fixture-title" style="text-align: left; border-left: 5px solid var(--primary); padding-left: 15px;">LİG TABLOSU</h3>
+            <h3 class="fixture-title" style="text-align: left; border-left: 4px solid var(--primary); padding-left: 12px;">LİG TABLOSU</h3>
             <table>
                 <thead>
                     <tr>
@@ -195,8 +202,7 @@
 
         <div class="fixture-wrapper">
             <h3 class="fixture-title">MAÇ SONUÇLARI</h3>
-            <div class="week-list" id="fixtureContent">
-                </div>
+            <div class="week-list" id="fixtureContent"></div>
         </div>
     </div>
 
@@ -235,22 +241,20 @@
                 };
             }).sort((a,b) => b.pts - a.pts || b.av - a.av);
 
-            // Özet Kartları
             const totalGoals = matches.reduce((sum, m) => sum + m.s1 + m.s2, 0);
             document.getElementById('statsSummary').innerHTML = `
                 <div class="stat-card"><small>Toplam Gol</small><div>⚽ ${totalGoals}</div></div>
                 <div class="stat-card"><small>Lider</small><div>🏆 ${result[0].pts > 0 ? result[0].name.split(' ')[0] : '-'}</div></div>
-                <div class="stat-card"><small>Oynanan Maç</small><div>🎮 ${matches.length}</div></div>
+                <div class="stat-card"><small>Maç Sayısı</small><div>🎮 ${matches.length}</div></div>
             `;
 
-            // Tabloyu Doldur
             document.getElementById('puanTablosu').innerHTML = result.map((p, i) => `
                 <tr>
                     <td style="font-weight: bold; color: #64748b;">${i+1}</td>
                     <td>
                         <div class="player-info">
                             <div class="avatar">${p.name[0]}</div>
-                            <div style="font-weight: 800; font-size: 1.1rem;">${p.name}</div>
+                            <div style="font-weight: 800;">${p.name.split(' ')[0]}</div>
                         </div>
                     </td>
                     <td>${p.o}</td><td>${p.g}</td><td>${p.b}</td><td>${p.m}</td>
@@ -262,7 +266,6 @@
                 </tr>
             `).join('');
 
-            // Maç Sonuçlarını Merkeze Diz (Ters Sıralama: Son maç en üstte)
             let fixtureHTML = "";
             [...matches].reverse().forEach((m, index) => {
                 const weekNum = matches.length - index;

@@ -3,113 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lig Admin - Giriş</title>
+    <title>Lig Admin - Ortak Panel</title>
     <style>
         :root { --p: #ff0000; --bg: #0f0f0f; --card: #1f1f1f; --text: #ffffff; }
-        
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 15px; /* Mobilde daha geniş alan için azaltıldı */
-            margin: 0;
-        }
-
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 15px; margin: 0; }
         #login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 100; }
-        
-        .login-card { 
-            background: var(--card); 
-            padding: 30px 20px; 
-            border-radius: 15px; 
-            border: 1px solid var(--p); 
-            text-align: center; 
-            width: 85%; /* Mobilde kart genişliği */
-            max-width: 350px;
-        }
-
+        .login-card { background: var(--card); padding: 30px 20px; border-radius: 15px; border: 1px solid var(--p); text-align: center; width: 85%; max-width: 350px; }
         #admin-panel { display: none; width: 100%; max-width: 500px; }
-        
-        .card { 
-            background: var(--card); 
-            padding: 20px; 
-            border-radius: 12px; 
-            margin-bottom: 20px; 
-            border: 1px solid #333; 
-        }
-
-        /* Inputlar mobilde daha kolay tıklanması için büyütüldü */
-        input { 
-            background: #000; 
-            border: 1px solid #444; 
-            color: white; 
-            padding: 15px 10px; 
-            border-radius: 8px; 
-            text-align: center; 
-            font-size: 1.2rem; /* Yazı tipi büyütüldü */
-            width: 90%; 
-            margin: 10px 0;
-            outline: none;
-        }
-
+        .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
+        input { background: #000; border: 1px solid #444; color: white; padding: 15px 10px; border-radius: 8px; text-align: center; font-size: 1.2rem; width: 90%; margin: 10px 0; outline: none; }
         input:focus { border-color: var(--p); }
-
-        /* Butonlar parmakla basılacak kadar büyük yapıldı */
-        button { 
-            background: var(--p); 
-            border: none; 
-            padding: 16px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            width: 100%; 
-            color: white; 
-            transition: 0.3s; 
-            font-size: 1rem;
-            text-transform: uppercase;
-        }
-
-        .match-item { 
-            background: #2a2a2a; 
-            padding: 20px; 
-            border-radius: 8px; 
-            margin-bottom: 12px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-            border-left: 5px solid var(--p); 
-        }
-
-        .match-item span {
-            font-size: 1.1rem;
-            font-weight: bold;
-            text-align: center;
-        }
-
+        button { background: var(--p); border: none; padding: 16px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; color: white; transition: 0.3s; font-size: 1rem; text-transform: uppercase; }
+        button:disabled { background: #444; cursor: not-allowed; }
+        .match-item { background: #2a2a2a; padding: 20px; border-radius: 8px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 15px; border-left: 5px solid var(--p); }
+        .match-item span { font-size: 1.1rem; font-weight: bold; text-align: center; }
         .btn-group { display: flex; gap: 10px; }
-        
-        .edit-btn { background: #fbbf24; color: black; flex: 1; border-radius: 8px; border:none; cursor: pointer; padding: 12px; font-weight: bold; }
-        .del-btn { background: #ff4444; color: white; flex: 1; border-radius: 8px; border:none; cursor: pointer; padding: 12px; font-weight: bold; }
-
-        /* Mobil Skor Giriş Alanı Düzenlemesi */
-        .score-grid {
-            display: grid; 
-            grid-template-columns: 1fr auto 1fr; 
-            align-items: center; 
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
+        .edit-btn { background: #fbbf24; color: black; flex: 1; border-radius: 8px; border:none; padding: 12px; font-weight: bold; }
+        .del-btn { background: #ff4444; color: white; flex: 1; border-radius: 8px; border:none; padding: 12px; font-weight: bold; }
+        .score-grid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; color: #aaa; }
+        #status-msg { font-size: 0.8rem; margin-top: 10px; color: #00d4ff; }
     </style>
 </head>
 <body>
     <div id="login-screen">
         <div class="login-card">
             <h2>🔐 YouTube Lig Admin</h2>
-            <input type="password" id="passInput" placeholder="Şifre..." autocomplete="current-password">
+            <input type="password" id="passInput" placeholder="Lig Şifresi...">
+            <input type="password" id="ghTokenInput" placeholder="GitHub Token (İlk Girişte)" style="font-size: 0.8rem;">
             <button onclick="login()">GİRİŞ YAP</button>
         </div>
     </div>
@@ -130,85 +51,150 @@
                 </div>
             </div>
             <input type="hidden" id="edit-id">
-            <button id="main-btn" onclick="saveMatch()">KAYDET</button>
+            <button id="main-btn" onclick="saveToGitHub()">KAYDET VE BULUTA GÖNDER</button>
+            <div id="status-msg"></div>
             <button id="cancel-btn" onclick="resetForm()" style="background:#444; margin-top:10px; display:none;">İPTAL</button>
         </div>
         <div id="matchList"></div>
     </div>
 
     <script>
-        const PASS = "admin123";
-        let matches = JSON.parse(localStorage.getItem('efb_matches')) || [];
+        // --- AYARLAR ---
+        const PASS = "admin123"; // Panel giriş şifren
+        const OWNER = "GITHUB_KULLANICI_ADIN"; // GitHub kullanıcı adın
+        const REPO = "REPOSİTORY_ADIN"; // Repo adın
+        const PATH = "index.html"; // Verinin olduğu dosya
         
-        function login() {
-            if(document.getElementById('passInput').value === PASS) {
+        let matches = [];
+        let ghToken = localStorage.getItem('gh_token') || "";
+
+        if(ghToken) document.getElementById('ghTokenInput').value = ghToken;
+
+        async function login() {
+            const pass = document.getElementById('passInput').value;
+            const token = document.getElementById('ghTokenInput').value;
+            
+            if(pass === PASS && token) {
+                ghToken = token;
+                localStorage.setItem('gh_token', token);
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('admin-panel').style.display = 'block';
-                renderMatches();
+                await fetchMatchesFromGitHub();
             } else {
-                alert("Şifre hatalı!");
+                alert("Şifre veya Token hatalı!");
             }
         }
 
-        function saveMatch() {
-            const v1 = document.getElementById('s1').value;
-            const v2 = document.getElementById('s2').value;
-            const s1 = v1 === "" ? 0 : parseInt(v1);
-            const s2 = v2 === "" ? 0 : parseInt(v2);
+        async function fetchMatchesFromGitHub() {
+            try {
+                const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`);
+                const data = await res.json();
+                const content = decodeURIComponent(escape(atob(data.content)));
+                
+                // index.html içindeki "const MACLAR = [...];" kısmını ayıkla
+                const matchData = content.match(/const MACLAR = \s*\[([\s\S]*?)\]\s*;/);
+                if (matchData) {
+                    // Güvenli eval kullanımı veya basit parse
+                    matches = eval("[" + matchData[1] + "]");
+                    renderMatches();
+                }
+            } catch (err) {
+                console.error("Veri çekme hatası:", err);
+            }
+        }
+
+        async function saveToGitHub() {
+            const s1 = parseInt(document.getElementById('s1').value) || 0;
+            const s2 = parseInt(document.getElementById('s2').value) || 0;
             const editId = document.getElementById('edit-id').value;
+            const btn = document.getElementById('main-btn');
+            const status = document.getElementById('status-msg');
 
+            btn.disabled = true;
+            status.innerText = "GitHub güncelleniyor...";
+
+            let newMatches = [...matches];
             if(editId) {
-                const index = matches.findIndex(m => m.id == editId);
-                matches[index].s1 = s1; 
-                matches[index].s2 = s2;
+                newMatches[editId] = { s1, s2 };
             } else {
-                matches.push({ id: Date.now(), s1, s2 });
+                newMatches.push({ s1, s2 });
             }
-            
-            localStorage.setItem('efb_matches', JSON.stringify(matches));
-            resetForm(); 
-            renderMatches();
-        }
 
-        function editMatch(id) {
-            const m = matches.find(m => m.id == id);
-            document.getElementById('s1').value = m.s1;
-            document.getElementById('s2').value = m.s2;
-            document.getElementById('edit-id').value = id;
-            document.getElementById('form-title').innerText = "Maçı Düzenle";
-            document.getElementById('main-btn').innerText = "GÜNCELLE";
-            document.getElementById('cancel-btn').style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Düzenle deyince yukarı kaydır
-        }
+            try {
+                const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`);
+                const fileData = await res.json();
+                let content = decodeURIComponent(escape(atob(fileData.content)));
 
-        function deleteMatch(id) {
-            if(confirm("Bu maçı silmek istediğine emin misin?")) {
-                matches = matches.filter(m => m.id != id);
-                localStorage.setItem('efb_matches', JSON.stringify(matches));
-                renderMatches();
+                const newMatchesString = JSON.stringify(newMatches, null, 12).replace(/"([^"]+)":/g, '$1:');
+                const updatedContent = content.replace(/const MACLAR = \s*\[([\s\S]*?)\]\s*;/, `const MACLAR = ${newMatchesString};`);
+
+                const updateRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${ghToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: "Lig Güncelleme",
+                        content: btoa(unescape(encodeURIComponent(updatedContent))),
+                        sha: fileData.sha
+                    })
+                });
+
+                if(updateRes.ok) {
+                    matches = newMatches;
+                    renderMatches();
+                    resetForm();
+                    status.innerText = "Başarıyla kaydedildi!";
+                } else {
+                    alert("Yükleme hatası! Token'ı kontrol et.");
+                }
+            } catch (err) {
+                alert("Bir hata oluştu.");
+            } finally {
+                btn.disabled = false;
             }
-        }
-
-        function resetForm() {
-            document.getElementById('s1').value = ""; 
-            document.getElementById('s2').value = "";
-            document.getElementById('edit-id').value = ""; 
-            document.getElementById('main-btn').innerText = "KAYDET";
-            document.getElementById('form-title').innerText = "Yeni Maç Kaydı";
-            document.getElementById('cancel-btn').style.display = 'none';
         }
 
         function renderMatches() {
             const list = document.getElementById('matchList');
-            list.innerHTML = matches.map(m => `
+            list.innerHTML = matches.map((m, i) => `
                 <div class="match-item">
                     <span>EYMEN ${m.s1} — ${m.s2} BERAT</span>
                     <div class="btn-group">
-                        <button class="edit-btn" onclick="editMatch(${m.id})">Düzenle</button>
-                        <button class="del-btn" onclick="deleteMatch(${m.id})">Sil</button>
+                        <button class="edit-btn" onclick="editMatch(${i})">Düzenle</button>
+                        <button class="del-btn" onclick="deleteMatch(${i})">Sil</button>
                     </div>
                 </div>
             `).reverse().join('');
+        }
+
+        function editMatch(index) {
+            const m = matches[index];
+            document.getElementById('s1').value = m.s1;
+            document.getElementById('s2').value = m.s2;
+            document.getElementById('edit-id').value = index;
+            document.getElementById('form-title').innerText = "Maçı Düzenle";
+            document.getElementById('main-btn').innerText = "GÜNCELLE";
+            document.getElementById('cancel-btn').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function deleteMatch(index) {
+            if(confirm("Silmek istediğine emin misin?")) {
+                matches.splice(index, 1);
+                // Silme işleminden sonra GitHub'a kaydetmesi için aynı save fonksiyonunu kullanabiliriz
+                // Ama karışıklık olmasın diye manuel tetiklemek en iyisi:
+                document.getElementById('s1').value = matches[0]?.s1 || 0; // Geçici placeholder
+                await saveToGitHub(); 
+                resetForm();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('s1').value = ""; document.getElementById('s2').value = "";
+            document.getElementById('edit-id').value = "";
+            document.getElementById('main-btn').innerText = "KAYDET VE BULUTA GÖNDER";
+            document.getElementById('form-title').innerText = "Yeni Maç Kaydı";
+            document.getElementById('cancel-btn').style.display = 'none';
+            document.getElementById('status-msg').innerText = "";
         }
     </script>
 </body>

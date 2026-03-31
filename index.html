@@ -2,295 +2,241 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>eFootball Pro League | YouTube Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARADENİZSPOR FK | Resmi Web Sitesi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #00d4ff;
-            --secondary: #0055ff;
-            --bg: #030712;
-            --card-bg: rgba(17, 24, 39, 0.85);
-            --text: #f3f4f6;
-            --gold: #fbbf24;
-            --neon-glow: 0 0 20px rgba(0, 212, 255, 0.5);
+        :root { --primary: #ffd700; --dark: #07090c; --card: #12161f; --text: #ffffff; --border: rgba(255, 255, 255, 0.1); --insta: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--dark); color: var(--text); padding-top: 80px; overflow-x: hidden; }
+
+        /* --- NAVBAR --- */
+        header { position: fixed; top: 0; width: 100%; height: 70px; background: #000; border-bottom: 2px solid var(--primary); display: flex; justify-content: space-between; align-items: center; padding: 0 5%; z-index: 1000; }
+        .logo { font-family: 'Bebas Neue'; font-size: 1.4rem; color: var(--primary); cursor: pointer; letter-spacing: 1px; }
+        nav { display: flex; gap: 8px; align-items: center; }
+        .nav-item { color: #888; text-decoration: none; font-weight: bold; font-size: 0.65rem; cursor: pointer; text-transform: uppercase; }
+        .nav-item.active { color: var(--primary); border-bottom: 1px solid var(--primary); }
+        .insta-nav { background: var(--insta); color: white; padding: 4px 8px; border-radius: 4px; text-decoration: none; font-size: 0.6rem; font-weight: 900; }
+
+        /* --- GRID --- */
+        .container { display: flex; flex-direction: column; gap: 20px; padding: 15px; width: 100%; max-width: 1300px; margin: 0 auto; }
+        @media (min-width: 1024px) {
+            .container { flex-direction: row; align-items: flex-start; }
+            main { flex: 2.5; }
+            aside { flex: 1; position: sticky; top: 90px; }
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top, #1e1b4b 0%, #030712 100%);
-            color: var(--text);
-            margin: 0;
-            padding: 10px;
-            overflow-x: hidden;
-        }
+        .page { display: none; width: 100%; }
+        .page.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .news-ticker {
-            background: rgba(255, 0, 0, 0.8);
-            color: white;
-            padding: 8px 0;
-            position: fixed;
-            top: 0; left: 0; width: 100%;
-            z-index: 1000;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            border-bottom: 2px solid var(--gold);
-        }
+        .box { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 15px; margin-bottom: 20px; }
+        h2 { font-family: 'Bebas Neue'; color: var(--primary); margin-bottom: 15px; font-size: 1.3rem; border-left: 4px solid var(--primary); padding-left: 10px; }
 
-        .ticker-wrapper {
-            display: flex;
-            white-space: nowrap;
-            animation: ticker 30s linear infinite;
-        }
+        /* --- HABER KARTLARI --- */
+        .n-card { background: #1a1f2b; border-radius: 12px; overflow: hidden; margin-bottom: 15px; cursor: pointer; border: 1px solid transparent; }
+        .n-img-container { width: 100%; height: 200px; background: #222; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .n-img { width: 100%; height: 100%; object-fit: cover; }
+        .no-img-text { color: #444; font-weight: bold; font-size: 0.7rem; }
+        .n-info { padding: 15px; }
+        .n-info h3 { font-size: 1.1rem; color: var(--primary); margin-bottom: 5px; word-break: break-all; }
+        .n-info p { font-size: 0.85rem; color: #bbb; word-break: break-all; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
 
-        @keyframes ticker {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
+        /* --- MAÇLAR & TABLO --- */
+        .m-card { background: #1a1f2b; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--primary); cursor: pointer; }
+        .m-score { display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 12px 8px; border-bottom: 1px solid #222; font-size: 0.8rem; }
 
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 50px auto 0 auto;
+        /* --- MODALLAR --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 10px; }
+        .modal-content { 
+            background: var(--card); padding: 20px; border-radius: 15px; 
+            width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; 
+            border: 1px solid var(--primary);
         }
+        .read-img { width: 100%; border-radius: 10px; margin-bottom: 20px; object-fit: cover; }
+        .read-title { font-family: 'Bebas Neue'; font-size: 1.8rem; color: var(--primary); margin-bottom: 15px; }
+        .read-text { line-height: 1.7; color: #ccc; font-size: 1rem; white-space: pre-line; word-wrap: break-word; }
 
-        header { text-align: center; margin-bottom: 30px; }
-        
-        h1 {
-            font-size: calc(1.8rem + 2vw);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            margin: 15px 0;
-            background: linear-gradient(to right, #fff, var(--primary), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(var(--neon-glow));
-        }
-
-        .stats-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            padding: 15px 10px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            text-align: center;
-        }
-
-        .stat-card div { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
-        .stat-card small { font-size: 0.7rem; color: #9ca3af; }
-
-        .table-wrapper, .fixture-wrapper {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 40px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
-
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { padding: 12px 8px; color: #64748b; font-size: 0.7rem; text-transform: uppercase; border-bottom: 2px solid #334155; }
-        td { padding: 12px 8px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-
-        .player-info { display: flex; align-items: center; gap: 10px; text-align: left; }
-        .avatar {
-            width: 35px; height: 35px; border-radius: 8px;
-            display: flex; justify-content: center; align-items: center;
-            font-weight: bold; background: #1e293b;
-            border: 2px solid var(--primary);
-            font-size: 0.8rem;
-        }
-
-        .form-dot {
-            display: inline-block; width: 18px; height: 18px; border-radius: 4px;
-            margin: 0 1px; font-size: 10px; line-height: 18px; font-weight: bold; color: white;
-        }
-        .win { background: #10b981; } .loss { background: #ef4444; } .draw { background: #6b7280; }
-        .pts-font { font-size: 1.5rem; font-weight: 900; color: var(--gold); }
-
-        .fixture-title {
-            color: var(--primary);
-            text-transform: uppercase;
-            text-align: center;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-        }
-        
-        .week-list {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .match-card {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 12px 15px;
-            border-radius: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            width: 95%;
-            max-width: 450px;
-            transition: 0.3s;
-        }
-        
-        .m-week { color: var(--gold); font-size: 0.6rem; font-weight: bold; min-width: 45px; }
-        .m-name { font-weight: bold; font-size: 0.85rem; width: 85px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .m-score { 
-            background: var(--text); color: #000; 
-            padding: 4px 12px; border-radius: 6px; 
-            font-weight: 900; font-size: 1.1rem;
-            min-width: 50px; text-align: center;
-        }
-
-        .scroll-hint {
-            text-align: center; font-size: 0.7rem; color: #64748b; margin-bottom: 5px; display: none;
-        }
-        @media (max-width: 768px) {
-            .scroll-hint { display: block; }
-        }
+        /* --- ADMIN PANEL --- */
+        .admin-list-item { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.75rem; }
+        input, select, textarea { background: #1e2533; border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-size: 16px; }
+        .btn { background: var(--primary); color: black; border: none; padding: 14px; border-radius: 8px; width: 100%; font-weight: 900; cursor: pointer; }
+        .del-btn { background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 0.65rem; cursor: pointer; }
+        .insta-box { background: var(--insta); border-radius: 15px; padding: 20px; text-align: center; color: white; text-decoration: none; display: block; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="news-ticker">
-        <div class="ticker-wrapper">
-            EYMEN YAĞIZ VS BERAT EFE ÖZTEL | BÜYÜK RİVALRY SEZONU BAŞLADI! | ABONE OLMAYI UNUTMAYIN! | LİGDE REKABET KIZIŞIYOR! |
+    <header>
+        <div class="logo" onclick="showPage('home')">KARADENİZSPOR FK</div>
+        <nav>
+            <div class="nav-item active" id="nav-home" onclick="showPage('home')">ANA SAYFA</div>
+            <div class="nav-item" id="nav-news" onclick="showPage('news')">HABERLER</div>
+            <a href="https://www.instagram.com/karadenizspor_fk/" target="_blank" class="insta-nav">IG</a>
+            <div class="nav-item" style="color:#ff4444" onclick="openLogin()">ADMİN</div>
+        </nav>
+    </header>
+
+    <div id="infoModal" class="modal" onclick="closeAll()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modalData"></div>
+            <button class="btn" style="background:#333; color:white; margin-top:20px" onclick="closeAll()">KAPAT</button>
         </div>
     </div>
 
-    <div class="container">
-        <header>
-            <h1>PRO LEAGUE</h1>
-            <div class="stats-summary" id="statsSummary"></div>
-        </header>
-
-        <div class="scroll-hint">↔ Tabloyu yana kaydırabilirsiniz</div>
-        <div class="table-wrapper">
-            <h3 class="fixture-title" style="text-align: left; border-left: 4px solid var(--primary); padding-left: 12px;">LİG TABLOSU</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th style="text-align: left;">OYUNCU</th>
-                        <th>O</th><th>G</th><th>B</th><th>M</th>
-                        <th style="color: var(--primary)">AG</th>
-                        <th style="color: #ef4444">YG</th>
-                        <th>AV</th>
-                        <th>SON 5</th>
-                        <th>PUAN</th>
-                    </tr>
-                </thead>
-                <tbody id="puanTablosu"></tbody>
-            </table>
+    <div id="loginModal" class="modal">
+        <div class="modal-content" style="max-width: 320px; text-align: center;">
+            <h2 style="border:none; margin-bottom: 20px;">ADMİN GİRİŞİ</h2>
+            <input type="password" id="passInput" placeholder="Şifre">
+            <button class="btn" onclick="checkPass()">GİRİŞ</button>
         </div>
+    </div>
 
-        <div class="fixture-wrapper">
-            <h3 class="fixture-title">MAÇ SONUÇLARI</h3>
-            <div class="week-list" id="fixtureContent"></div>
+    <div id="adminPanel" class="modal">
+        <div class="modal-content">
+            <h2 style="border:none">YÖNETİM PANELİ</h2>
+            <div style="background:#1a1f2b; padding:15px; border-radius:12px; margin-bottom:15px">
+                <p style="color:var(--primary); font-weight:bold; margin-bottom:10px">⚽ SKOR EKLE (Rakip: Çamlıkspor FK)</p>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="hS" placeholder="Biz">
+                    <input type="number" id="aS" placeholder="Rakip">
+                </div>
+                <select id="motmS"></select>
+                <button class="btn" onclick="addMatch()">KAYDET</button>
+                <div id="matchDeleteList" style="margin-top:15px; border-top:1px solid #333; padding-top:10px"></div>
+            </div>
+            <div style="background:#1a1f2b; padding:15px; border-radius:12px">
+                <p style="color:var(--primary); font-weight:bold; margin-bottom:10px">📰 HABER YÖNETİMİ</p>
+                <input type="text" id="nT" placeholder="Başlık">
+                <input type="text" id="nI" placeholder="Resim Linki">
+                <textarea id="nC" rows="3" placeholder="İçerik..."></textarea>
+                <button class="btn" style="background:white" onclick="addNews()">YAYINLA</button>
+                <div id="newsDeleteList" style="margin-top:15px; border-top:1px solid #333; padding-top:10px"></div>
+            </div>
+            <button class="btn" style="background:#444; color:white; margin-top:15px" onclick="closeAll()">ÇIKIŞ</button>
+        </div>
+    </div>
+
+    <div id="page-home" class="page active">
+        <div class="container">
+            <main>
+                <div class="box"><h2>🔥 FLAŞ HABERLER</h2><div id="homeNews"></div></div>
+                <div class="box"><h2>🏁 SON KARŞILAŞMALAR</h2><div id="resList"></div></div>
+            </main>
+            <aside>
+                <div class="box"><h2>🏆 PUAN DURUMU</h2><table><thead><tr><th>Takım</th><th>OM</th><th>P</th></tr></thead><tbody id="pBody"></tbody></table></div>
+                <a href="https://www.instagram.com/karadenizspor_fk/" target="_blank" class="insta-box">
+                    <h3>BİZİ TAKİP ET</h3>
+                    <p>@karadenizspor_fk</p>
+                </a>
+            </aside>
+        </div>
+    </div>
+
+    <div id="page-news" class="page">
+        <div class="container" style="flex-direction: column;">
+            <div class="box"><h2>🗞️ TÜM HABERLER</h2><div id="allNews" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:15px;"></div></div>
         </div>
     </div>
 
     <script>
-        // --- 🏆 MAÇ VERİLERİ BURAYA YAZILACAK 🏆 ---
-        // Berat veya Sen GitHub'da dosyayı düzenleyip buraya ekleme yapınca herkes görecek.
-        // s1: EYMEN, s2: BERAT
-        const MACLAR = [
-            { s1: 3, s2: 1 }, // 1. Maç örneği
-            { s1: 0, s2: 2 }, // 2. Maç örneği
-            // Yeni maç geldikçe altına ekleyin. Virgül koymayı unutmayın!
-        ];
-        // ------------------------------------------
+        let players = ["Eymen Yağız Sancak", "Ferit Ünlü", "Çağatay Bingül", "Ömer Bulut Ayan", "Berat Efe Öztel", "Burak Emir Baysal", "Mahmut Deniz Sandıkçı"];
+        let news = JSON.parse(localStorage.getItem('k_news')) || [{t:"Karadenizspor FK Hoş Geldiniz", i:"", c:"Takımımızın resmi sitesi yayına girdi!"}];
+        let matches = JSON.parse(localStorage.getItem('k_matches')) || [];
 
-        function updateStats() {
-            // Artık localStorage yerine yukarıdaki MACLAR listesini kullanıyoruz
-            const matches = MACLAR; 
-            
-            let players = {
-                "EYMEN YAĞIZ": { g:0, b:0, m:0, ag:0, yg:0, lastMatches: [] },
-                "BERAT EFE ÖZTEL": { g:0, b:0, m:0, ag:0, yg:0, lastMatches: [] }
-            };
-
-            matches.forEach(m => {
-                players["EYMEN YAĞIZ"].ag += m.s1;
-                players["EYMEN YAĞIZ"].yg += m.s2;
-                players["BERAT EFE ÖZTEL"].ag += m.s2;
-                players["BERAT EFE ÖZTEL"].yg += m.s1;
-
-                if(m.s1 > m.s2) { 
-                    players["EYMEN YAĞIZ"].g++; players["BERAT EFE ÖZTEL"].m++; 
-                    players["EYMEN YAĞIZ"].lastMatches.push('G'); players["BERAT EFE ÖZTEL"].lastMatches.push('M');
-                } else if(m.s1 < m.s2) { 
-                    players["BERAT EFE ÖZTEL"].g++; players["EYMEN YAĞIZ"].m++; 
-                    players["EYMEN YAĞIZ"].lastMatches.push('M'); players["BERAT EFE ÖZTEL"].lastMatches.push('G');
-                } else { 
-                    players["EYMEN YAĞIZ"].b++; players["BERAT EFE ÖZTEL"].b++; 
-                    players["EYMEN YAĞIZ"].lastMatches.push('B'); players["BERAT EFE ÖZTEL"].lastMatches.push('B');
-                }
-            });
-
-            const result = Object.keys(players).map(name => {
-                const p = players[name];
-                return { 
-                    name, ...p, 
-                    o: p.g+p.b+p.m, av: p.ag-p.yg, pts: (p.g*3)+p.b,
-                    form: p.lastMatches.slice(-5) 
-                };
-            }).sort((a,b) => b.pts - a.pts || b.av - a.av);
-
-            const totalGoals = matches.reduce((sum, m) => sum + m.s1 + m.s2, 0);
-            document.getElementById('statsSummary').innerHTML = `
-                <div class="stat-card"><small>Toplam Gol</small><div>⚽ ${totalGoals}</div></div>
-                <div class="stat-card"><small>Lider</small><div>🏆 ${result[0].pts > 0 ? result[0].name.split(' ')[0] : '-'}</div></div>
-                <div class="stat-card"><small>Maç Sayısı</small><div>🎮 ${matches.length}</div></div>
-            `;
-
-            document.getElementById('puanTablosu').innerHTML = result.map((p, i) => `
-                <tr>
-                    <td style="font-weight: bold; color: #64748b;">${i+1}</td>
-                    <td>
-                        <div class="player-info">
-                            <div class="avatar">${p.name[0]}</div>
-                            <div style="font-weight: 800;">${p.name.split(' ')[0]}</div>
-                        </div>
-                    </td>
-                    <td>${p.o}</td><td>${p.g}</td><td>${p.b}</td><td>${p.m}</td>
-                    <td style="font-weight:bold; color:var(--primary)">${p.ag}</td>
-                    <td style="font-weight:bold; color:#ef4444">${p.yg}</td>
-                    <td style="font-weight:bold;">${p.av}</td>
-                    <td>${p.form.map(f => `<span class="form-dot ${f === 'G' ? 'win' : f === 'M' ? 'loss' : 'draw'}">${f}</span>`).join('')}</td>
-                    <td class="pts-font">${p.pts}</td>
-                </tr>
-            `).join('');
-
-            let fixtureHTML = "";
-            [...matches].reverse().forEach((m, index) => {
-                const weekNum = matches.length - index;
-                fixtureHTML += `
-                    <div class="match-card">
-                        <span class="m-week">${weekNum}. MAÇ</span>
-                        <span class="m-name" style="text-align:right">EYMEN</span>
-                        <span class="m-score">${m.s1} - ${m.s2}</span>
-                        <span class="m-name" style="text-align:left">BERAT</span>
-                    </div>
-                `;
-            });
-            document.getElementById('fixtureContent').innerHTML = fixtureHTML || "Maç verisi bekleniyor...";
+        function sync() {
+            localStorage.setItem('k_news', JSON.stringify(news));
+            localStorage.setItem('k_matches', JSON.stringify(matches));
+            render();
         }
 
-        updateStats();
+        function showPage(p) {
+            document.querySelectorAll('.page, .nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('page-'+p).classList.add('active');
+            document.getElementById('nav-'+p).classList.add('active');
+            window.scrollTo(0,0);
+            render();
+        }
+
+        function openLogin() { 
+            document.getElementById('passInput').value = "";
+            document.getElementById('loginModal').style.display='flex'; 
+        }
+        function closeAll() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
+
+        function checkPass() {
+            if(document.getElementById('passInput').value==='kds55') {
+                closeAll(); document.getElementById('adminPanel').style.display='flex';
+                render();
+            } else {
+                alert("Hatalı!");
+            }
+        }
+
+        function render() {
+            const card = (n, i) => `
+                <div class="n-card" onclick="readNews(${i})">
+                    <div class="n-img-container">
+                        ${n.i ? `<img src="${n.i}" class="n-img" onerror="this.parentElement.innerHTML='<span class=\'no-img-text\'>GÖRSEL YOK</span>'">` : '<span class="no-img-text">KARADENİZSPOR FK</span>'}
+                    </div>
+                    <div class="n-info"><h3>${n.t}</h3><p>${n.c}</p></div>
+                </div>`;
+
+            document.getElementById('homeNews').innerHTML = news.slice(0,2).map((n, i) => card(n, i)).join('');
+            document.getElementById('allNews').innerHTML = news.map((n, i) => card(n, i)).join('');
+            
+            document.getElementById('newsDeleteList').innerHTML = news.map((n, i) => `
+                <div class="admin-list-item"><span>${n.t.substring(0,18)}...</span><button class="del-btn" onclick="delNews(${i})">SİL</button></div>`).join('');
+            document.getElementById('matchDeleteList').innerHTML = matches.map((m, i) => `
+                <div class="admin-list-item"><span>${m.hs}-${m.as} (${m.motm.split(' ')[0]})</span><button class="del-btn" onclick="delMatch(${i})">SİL</button></div>`).join('');
+
+            document.getElementById('resList').innerHTML = matches.map((m, i) => `<div class="m-card" onclick="showMotm(${i})"><div class="m-score"><span>Karadenizspor FK</span> <span style="color:var(--primary); font-size:1.2rem;">${m.hs}-${m.as}</span> <span>Çamlıkspor FK</span></div></div>`).join('');
+            
+            // PUAN TABLOSU HESAPLAMA
+            let teams = [{n:"Karadenizspor FK", om:0, p:0}, {n:"Çamlıkspor FK", om:0, p:0}];
+            matches.forEach(m => {
+                let h = teams[0], a = teams[1];
+                h.om++; a.om++;
+                if(m.hs>m.as) h.p+=3; else if(m.as>m.hs) a.p+=3; else {h.p++; a.p++;}
+            });
+            teams.sort((a,b) => b.p - a.p || b.om - a.om);
+            document.getElementById('pBody').innerHTML = teams.map(t => `<tr><td style="font-weight:bold">${t.n}</td><td>${t.om}</td><td style="color:var(--primary); font-weight:900">${t.p}</td></tr>`).join('');
+            document.getElementById('motmS').innerHTML = players.map(p => `<option value="${p}">${p}</option>`).join('');
+        }
+
+        function readNews(i) {
+            const n = news[i];
+            document.getElementById('modalData').innerHTML = `${n.i ? `<img src="${n.i}" class="read-img">` : ''}<h1 class="read-title">${n.t}</h1><div class="read-text">${n.c}</div>`;
+            document.getElementById('infoModal').style.display='flex';
+        }
+
+        function showMotm(i) {
+            const m = matches[i];
+            document.getElementById('modalData').innerHTML = `<div style="text-align:center"><h3 style="color:#888;">MAÇ SONUCU</h3><h1 style="font-size:3.5rem; margin:15px 0; font-family:'Bebas Neue'">${m.hs} - ${m.as}</h1><div style="background:rgba(255,215,0,0.1); border:2px solid var(--primary); padding:25px; border-radius:15px;"><p style="font-size:0.8rem; color:var(--primary); font-weight:bold">MAÇIN ADAMI</p><h2 style="font-size:2rem; margin-top:5px;">🌟 ${m.motm}</h2></div></div>`;
+            document.getElementById('infoModal').style.display='flex';
+        }
+
+        function addMatch() {
+            const hs = parseInt(document.getElementById('hS').value), as = parseInt(document.getElementById('aS').value);
+            if(isNaN(hs) || isNaN(as)) return alert("Skor gir!");
+            matches.unshift({hs, as, motm:document.getElementById('motmS').value});
+            sync(); alert("Maç eklendi!");
+        }
+
+        function delMatch(i) { if(confirm("Silinsin mi?")) { matches.splice(i, 1); sync(); } }
+
+        function addNews() {
+            const t = document.getElementById('nT').value, c = document.getElementById('nC').value;
+            if(!t || !c) return alert("Eksik!");
+            news.unshift({t, i: document.getElementById('nI').value, c});
+            sync(); alert("Yayınlandı!");
+        }
+
+        function delNews(i) { if(confirm("Silinsin mi?")) { news.splice(i, 1); sync(); } }
+
+        render();
     </script>
 </body>
 </html>

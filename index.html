@@ -145,7 +145,7 @@
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
+        // --- FIREBASE CONFIG (Güncellendi) ---
         const firebaseConfig = {
             apiKey: "AIzaSyAOQGMAfZEiZV-YuuJX02PiZpWZd54tAXk",
             authDomain: "karadenizspor55-4c363.firebaseapp.com",
@@ -163,8 +163,7 @@
         let news = [];
         let matches = [];
 
-        // ÖNEMLİ: Sayfa açılır açılmaz Firebase'den "gerçek zamanlı" dinlemeyi başlatıyoruz
-        // .on('value') fonksiyonu veritabanında bir şey değiştiğinde VEYA sayfa yenilendiğinde otomatik çalışır.
+        // Verileri Realtime Database üzerinden dinle
         db.ref('news').on('value', snapshot => {
             news = snapshot.val() || [];
             render();
@@ -203,20 +202,16 @@
                     <div class="n-info"><h3>${n.t}</h3><p>${n.c}</p></div>
                 </div>`;
 
-            // Ana sayfa ve Tüm haberler sayfalarını güncelle
             document.getElementById('homeNews').innerHTML = news.length > 0 ? news.slice(0,2).map((n, i) => card(n, i)).join('') : '<p style="padding:20px; color:#666;">Henüz haber yok...</p>';
             document.getElementById('allNews').innerHTML = news.length > 0 ? news.map((n, i) => card(n, i)).join('') : '<p style="padding:20px; color:#666;">Henüz haber yok...</p>';
             
-            // Admin listelerini güncelle
             document.getElementById('newsDeleteList').innerHTML = news.map((n, i) => `
                 <div class="admin-list-item"><span>${n.t.substring(0,18)}...</span><button onclick="delNews(${i})" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">SİL</button></div>`).join('');
             document.getElementById('matchDeleteList').innerHTML = matches.map((m, i) => `
                 <div class="admin-list-item"><span>${m.hs}-${m.as}</span><button onclick="delMatch(${i})" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">SİL</button></div>`).join('');
 
-            // Maç sonuçlarını güncelle
             document.getElementById('resList').innerHTML = matches.length > 0 ? matches.map((m, i) => `<div class="m-card" onclick="showMotm(${i})"><div class="m-score"><span>Karadenizspor FK</span> <span style="color:var(--primary); font-size:1.2rem;">${m.hs}-${m.as}</span> <span>Çamlıkspor FK</span></div></div>`).join('') : '<p style="padding:20px; color:#666;">Maç sonucu bekleniyor...</p>';
             
-            // PUAN TABLOSU HESAPLAMA
             let teams = [{n:"Karadenizspor FK", om:0, p:0}, {n:"Çamlıkspor FK", om:0, p:0}];
             matches.forEach(m => {
                 teams[0].om++; teams[1].om++;

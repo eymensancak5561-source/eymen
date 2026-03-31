@@ -37,13 +37,14 @@
         .box { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 15px; margin-bottom: 20px; overflow: hidden; }
         h2 { font-family: 'Bebas Neue'; color: var(--primary); margin-bottom: 15px; font-size: 1.3rem; border-left: 4px solid var(--primary); padding-left: 10px; }
 
-        /* --- HABER KARTLARI (TAŞMA ÖNLENDİ) --- */
+        /* --- HABER KARTLARI --- */
         .n-card { background: #1a1f2b; border-radius: 12px; overflow: hidden; margin-bottom: 15px; cursor: pointer; border: 1px solid transparent; width: 100%; }
         .n-img-container { width: 100%; height: 200px; background: #222; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .n-img { width: 100%; height: 100%; object-fit: cover; }
         .n-info { padding: 15px; }
         .n-info h3 { font-size: 1.1rem; color: var(--primary); margin-bottom: 5px; word-wrap: break-word; overflow-wrap: break-word; }
         .n-info p { font-size: 0.85rem; color: #bbb; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .no-img-text { color: var(--primary); font-family: 'Bebas Neue'; font-size: 1.2rem; }
 
         /* --- MAÇLAR & TABLO --- */
         .m-card { background: #1a1f2b; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--primary); cursor: pointer; }
@@ -144,7 +145,7 @@
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
+        // --- FIREBASE CONFIG (Senin Bilgilerin Entegre Edildi) ---
         const firebaseConfig = {
             apiKey: "AIzaSyAOQGMAfZEiZV-YuuJX02PiZpWZd54tAXk",
             authDomain: "karadenizspor55-4c363.firebaseapp.com",
@@ -196,7 +197,7 @@
             const card = (n, i) => `
                 <div class="n-card" onclick="readNews(${i})">
                     <div class="n-img-container">
-                        ${n.i ? `<img src="${n.i}" class="n-img" onerror="this.parentElement.innerHTML='<span class=\'no-img-text\'>GÖRSEL YOK</span>'">` : '<span class="no-img-text">KARADENİZSPOR FK</span>'}
+                        ${n.i ? `<img src="${n.i}" class="n-img" onerror="this.parentElement.innerHTML='<span class=\'no-img-text\'>KARADENİZSPOR FK</span>'">` : '<span class="no-img-text">KARADENİZSPOR FK</span>'}
                     </div>
                     <div class="n-info"><h3>${n.t}</h3><p>${n.c}</p></div>
                 </div>`;
@@ -205,13 +206,13 @@
             document.getElementById('allNews').innerHTML = news.map((n, i) => card(n, i)).join('');
             
             document.getElementById('newsDeleteList').innerHTML = news.map((n, i) => `
-                <div class="admin-list-item"><span>${n.t.substring(0,18)}...</span><button onclick="delNews(${i})" style="color:red; background:none; border:none; cursor:pointer;">SİL</button></div>`).join('');
+                <div class="admin-list-item"><span>${n.t.substring(0,18)}...</span><button onclick="delNews(${i})" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">SİL</button></div>`).join('');
             document.getElementById('matchDeleteList').innerHTML = matches.map((m, i) => `
-                <div class="admin-list-item"><span>${m.hs}-${m.as}</span><button onclick="delMatch(${i})" style="color:red; background:none; border:none; cursor:pointer;">SİL</button></div>`).join('');
+                <div class="admin-list-item"><span>${m.hs}-${m.as}</span><button onclick="delMatch(${i})" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">SİL</button></div>`).join('');
 
             document.getElementById('resList').innerHTML = matches.map((m, i) => `<div class="m-card" onclick="showMotm(${i})"><div class="m-score"><span>Karadenizspor FK</span> <span style="color:var(--primary); font-size:1.2rem;">${m.hs}-${m.as}</span> <span>Çamlıkspor FK</span></div></div>`).join('');
             
-            // PUAN TABLOSU
+            // PUAN TABLOSU HESAPLAMA
             let teams = [{n:"Karadenizspor FK", om:0, p:0}, {n:"Çamlıkspor FK", om:0, p:0}];
             matches.forEach(m => {
                 teams[0].om++; teams[1].om++;
@@ -239,18 +240,20 @@
             if(isNaN(hs) || isNaN(as)) return alert("Skor gir!");
             matches.unshift({hs, as, motm:document.getElementById('motmS').value});
             db.ref('matches').set(matches); alert("Kaydedildi!");
+            document.getElementById('hS').value = ""; document.getElementById('aS').value = "";
         }
 
-        function delMatch(i) { if(confirm("Silinsin mi?")) { matches.splice(i, 1); db.ref('matches').set(matches); } }
+        function delMatch(i) { if(confirm("Bu maçı silmek istediğine emin misin?")) { matches.splice(i, 1); db.ref('matches').set(matches); } }
 
         function addNews() {
             const t = document.getElementById('nT').value, c = document.getElementById('nC').value;
-            if(!t || !c) return alert("Eksik!");
+            if(!t || !c) return alert("Başlık ve içerik eksik!");
             news.unshift({t, i: document.getElementById('nI').value, c});
-            db.ref('news').set(news); alert("Yayınlandı!");
+            db.ref('news').set(news); alert("Haber yayınlandı!");
+            document.getElementById('nT').value = ""; document.getElementById('nC').value = ""; document.getElementById('nI').value = "";
         }
 
-        function delNews(i) { if(confirm("Silinsin mi?")) { news.splice(i, 1); db.ref('news').set(news); } }
+        function delNews(i) { if(confirm("Bu haberi silmek istediğine emin misin?")) { news.splice(i, 1); db.ref('news').set(news); } }
     </script>
 </body>
 </html>
